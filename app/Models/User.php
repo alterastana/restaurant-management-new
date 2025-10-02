@@ -29,6 +29,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    // Scope khusus untuk Manager
+    public function scopeManagers($query)
+    {
+        return $query->where('role_id', 2);
+    }
+
     /**
      * Relasi User ke Role (Many-to-One)
      */

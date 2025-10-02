@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Admin Restaurant',
             'email' => 'admin@resto.com',
+            'phone' => '08123456789',
             'password' => Hash::make('password'),
             'role_id' => $roles['admin'],
         ]);
@@ -23,29 +24,10 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Manager Resto',
             'email' => 'manager@resto.com',
+            'phone' => '08123456789',
             'password' => Hash::make('password'),
             'role_id' => $roles['manager'],
         ]);
 
-        User::create([
-            'name' => 'Waiter A',
-            'email' => 'waiter@resto.com',
-            'password' => Hash::make('password'),
-            'role_id' => $roles['waiter'],
-        ]);
-
-        User::create([
-            'name' => 'Cashier A',
-            'email' => 'cashier@resto.com',
-            'password' => Hash::make('password'),
-            'role_id' => $roles['cashier'],
-        ]);
-
-        User::create([
-            'name' => 'Customer Test',
-            'email' => 'customer@resto.com',
-            'password' => Hash::make('password'),
-            'role_id' => $roles['customer'],
-        ]);
     }
 }
