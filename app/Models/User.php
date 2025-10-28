@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne; // <-- Tambahkan ini jika belum ada
 
 class User extends Authenticatable
 {
@@ -29,37 +30,34 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Scope khusus untuk Manager
     public function scopeManagers($query)
     {
         return $query->where('role_id', 2);
     }
 
-    /**
-     * Relasi User ke Role (Many-to-One)
-     */
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
     }
 
-    /**
-     * Cek apakah user punya permission tertentu
-     */
+    // =======================================================
+    //    TAMBAHKAN METHOD INI UNTUK RELASI KE LOYALTY
+    // =======================================================
+    public function loyalty(): HasOne
+    {
+        return $this->hasOne(Loyalty::class, 'customer_id');
+    }
+
     public function hasPermission(string $permission): bool
     {
         return $this->role?->permissions()->where('name', $permission)->exists() ?? false;
     }
 
-    /**
-     * Cek apakah user punya role tertentu
-     */
     public function hasRole(string $role): bool
     {
         return $this->role?->name === $role;
     }
 
-    // Helper untuk role check cepat
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');
