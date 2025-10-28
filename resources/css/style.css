@@ -1,0 +1,130 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #fff8f0;
+    color: #333;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #c0392b;
+    color: white;
+    padding: 1rem 2rem;
+}
+
+.navbar a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.navbar a.active, .navbar a:hover {
+    text-decoration: underline;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* Hero Section */
+.hero {
+    background: url('https://source.unsplash.com/1600x800/?restaurant,food') center/cover no-repeat;
+    color: white;
+    height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hero-content {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 3rem;
+    border-radius: 15px;
+}
+
+.hero h1 span {
+    color: #f39c12;
+}
+
+.btn-primary {
+    background: #f39c12;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    background: #e67e22;
+}
+
+/* Menu Page */
+.menu-section {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.menu-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.menu-card:hover {
+    transform: translateY(-5px);
+}
+
+.menu-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.menu-card h3 {
+    margin: 0.5rem 0;
+    color: #c0392b;
+}
+
+.menu-card p {
+    color: #555;
+}
+
+.btn-secondary {
+    background: #c0392b;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #a93226;
+}
+
+/* Footer */
+footer {
+    background: #c0392b;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 3rem;
+}
