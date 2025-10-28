@@ -44,7 +44,7 @@ Route::prefix('dashboard')
         Route::resource('menu', MenuController::class);
         Route::resource('restoran', RestoranController::class);
         Route::resource('table', TableController::class);
-        Route::resource('loyalty', LoyaltyController::class);
+        Route::post('loyalty/check', LoyaltyController::class,); //'getLoyaltyByCustomerId'])->name('loyalty.check');
     });
 
 // ---------------------------------------------------------
