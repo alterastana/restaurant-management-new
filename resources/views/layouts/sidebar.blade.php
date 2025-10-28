@@ -6,7 +6,7 @@
 
         <ul class="p-4 space-y-2">
             <li>
-                <a href="{{ route('Dashboard.index') }}"
+                <a href="{{ route('dashboard') }}"
                    class="block px-4 py-2 hover:bg-gray-200 rounded">Home</a>
             </li>
             <li>

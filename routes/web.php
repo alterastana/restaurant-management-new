@@ -10,86 +10,34 @@ use App\Http\Controllers\Dashboard\TableController;
 use App\Http\Controllers\Dashboard\LoyaltyController;
 use Illuminate\Support\Facades\Auth;
 
-// ---------------------------------------------------------
-// Rute awal: arahkan langsung ke halaman login
-// ---------------------------------------------------------
-Route::get('/', function () {
-    return redirect()->route('login');
-});
-
-// ---------------------------------------------------------
-// Alias untuk /dashboard (agar tidak error di redirect())
-// ---------------------------------------------------------
-Route::get('/dashboard', function () {
-    return redirect()->route('Dashboard.index');
-})->name('dashboard');
-
-// ---------------------------------------------------------
-// Grup utama Dashboard
-// ---------------------------------------------------------
-Route::prefix('dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('Dashboard.')
-    ->group(function () {
-
-        // Halaman utama dashboard (Manager view)
-        Route::get('/', function () {
-            return view('Dashboard.manager.dashboard');
-        })->name('index');
-
-        // ------------------------------
-        // CRUD Controller untuk fitur-fitur dashboard
-        // ------------------------------
-        Route::resource('manager', ManagerController::class);
-        Route::resource('customer', CustomerController::class);
-        Route::resource('menu', MenuController::class);
-        Route::resource('restoran', RestoranController::class);
-        Route::resource('table', TableController::class);
-        Route::resource('loyalty', LoyaltyController::class);
-    });
-
-// ---------------------------------------------------------
-// Grup untuk profil pengguna login
-// ---------------------------------------------------------
-Route::middleware('auth')->group(function () {
 // ======================================================================
-// 🔹 Rute Publik
-// ======================================================================
-
-// Halaman utama diarahkan ke landing page
-Route::get('/', function () {
-    return redirect()->route('landingpage.index');
-});
-
-// Landing page utama
-Route::get('/landing', function () {
-    return view('landingpage.index');
-})->name('landingpage.index');
-
-// Halaman Menu (dari tombol "Pesan Sekarang")
-Route::get('/menu', function () {
-    return view('landingpage.menu');
-})->name('landingpage.menu');
-
-// Halaman login manual (jika ingin override bawaan)
-Route::get('/login', function () {
-    return view('auth.login');
-});
-
-// ======================================================================
-// 🔹 Rute Otentikasi (Laravel Breeze/Fortify/Jetstream)
+// 🔹 Authentication Routes
 // ======================================================================
 require __DIR__.'/auth.php';
 
 // ======================================================================
-// 🔹 Rute Dashboard (memerlukan login)
+// 🔹 Public Routes
+// ======================================================================
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+Route::get('/landing', function () {
+    return view('landingpage.index');
+})->name('landingpage.index');
+
+Route::get('/menu', function () {
+    return view('landingpage.menu');
+})->name('landingpage.menu');
+
+// ======================================================================
+// 🔹 Protected Routes (Requires Authentication)
 // ======================================================================
 Route::middleware(['auth', 'verified'])->group(function () {
-
-    // Dashboard utama dinamis berdasarkan role
+    // Dashboard routing based on role
     Route::get('/dashboard', function () {
         $user = Auth::user();
-
+        
         if ($user->hasRole('admin')) {
             return view('Dashboard.admin.dashboard');
         }
@@ -99,21 +47,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         if ($user->hasRole('customer')) {
             return view('Dashboard.customer.index');
         }
-
-        abort(403, 'Anda tidak memiliki peran yang valid.');
+        
+        abort(403, 'Invalid user role.');
     })->name('dashboard');
 
-    // Grup rute dashboard
+    // Dashboard Routes Group
     Route::prefix('dashboard')->name('Dashboard.')->group(function () {
-        
-        // Hanya Admin
+        // Admin Only Routes
         Route::middleware('role:admin')->group(function() {
             Route::resource('users', ManagerController::class);
-            Route::get('/manager', [ManagerController::class, 'index'])
-                ->name('manager.index');
+            Route::get('/manager', [ManagerController::class, 'index'])->name('manager.index');
         });
 
-        // Admin & Manager
+        // Admin & Manager Routes
         Route::middleware('role:admin,manager')->group(function() {
             Route::resource('restoran', RestoranController::class);
             Route::resource('customer', CustomerController::class);
@@ -123,14 +69,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 
-    // Profil pengguna
- 
+    // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-// ---------------------------------------------------------
-// Route bawaan Laravel Auth
-// ---------------------------------------------------------
-require __DIR__ . '/auth.php';

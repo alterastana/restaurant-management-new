@@ -3,13 +3,13 @@
         <div class="flex justify-between h-16">
             <div class="flex">
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('Dashboard.index') }}">
+                    <a href="{{ route('dashboard') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('Dashboard.index')" :active="request()->routeIs('Dashboard.index')">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
@@ -72,9 +72,24 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
 
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('Dashboard.index')" :active="request()->routeIs('Dashboard.index')">
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            
+            @if (Auth::user()->hasRole('admin') || Auth::user()->hasRole('manager'))
+                <x-responsive-nav-link :href="route('Dashboard.restoran.index')" :active="request()->routeIs('Dashboard.restoran.*')">
+                    {{ __('Restoran') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('Dashboard.menu.index')" :active="request()->routeIs('Dashboard.menu.*')">
+                    {{ __('Menu') }}
+                </x-responsive-nav-link>
+            @endif
+            
+            @if (Auth::user()->hasRole('admin'))
+                <x-responsive-nav-link :href="route('Dashboard.manager.index')" :active="request()->routeIs('Dashboard.manager.*')">
+                    {{ __('Users') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
@@ -101,7 +116,5 @@
                 </form>
             </div>
         </div>
-=======
-        {{-- Anda bisa menerapkan logika @if yang sama di sini untuk menu mobile --}}
     </div>
 </nav>
