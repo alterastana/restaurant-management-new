@@ -1,36 +1,77 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config('app.name', 'Dashboard') }}</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-100 text-gray-800">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <div class="flex min-h-screen">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        {{-- SIDEBAR KIRI --}}
+        <aside class="w-64 bg-white border-r shadow-sm fixed top-0 left-0 h-screen">
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-bold text-indigo-600">Menu</h2>
+            </div>
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+            <nav class="p-4 space-y-2">
+                <a href="{{ route('Dashboard.index') }}"
+                   class="block px-3 py-2 rounded-md hover:bg-indigo-50 {{ request()->routeIs('Dashboard.index') ? 'bg-indigo-100 font-semibold text-indigo-700' : '' }}">
+                    Dashboard
+                </a>
+                <a href="{{ route('Dashboard.manager.index') }}"
+                   class="block px-3 py-2 rounded-md hover:bg-indigo-50 {{ request()->routeIs('Dashboard.manager.*') ? 'bg-indigo-100 font-semibold text-indigo-700' : '' }}">
+                    Manager
+                </a>
+                <a href="{{ route('Dashboard.restoran.index') }}"
+                   class="block px-3 py-2 rounded-md hover:bg-indigo-50 {{ request()->routeIs('Dashboard.restoran.*') ? 'bg-indigo-100 font-semibold text-indigo-700' : '' }}">
+                    Restoran
+                </a>
+                <a href="{{ route('Dashboard.menu.index') }}"
+                   class="block px-3 py-2 rounded-md hover:bg-indigo-50 {{ request()->routeIs('Dashboard.menu.*') ? 'bg-indigo-100 font-semibold text-indigo-700' : '' }}">
+                    Menu Restoran
+                </a>
+                <a href="{{ route('Dashboard.table.index') }}"
+                   class="block px-3 py-2 rounded-md hover:bg-indigo-50 {{ request()->routeIs('Dashboard.table.*') ? 'bg-indigo-100 font-semibold text-indigo-700' : '' }}">
+                    Table
+                </a>
+                <a href="{{ route('Dashboard.customer.index') }}"
+                   class="block px-3 py-2 rounded-md hover:bg-indigo-50 {{ request()->routeIs('Dashboard.customer.*') ? 'bg-indigo-100 font-semibold text-indigo-700' : '' }}">
+                    Customer
+                </a>
+                <a href="{{ route('Dashboard.loyalty.index') }}"
+                   class="block px-3 py-2 rounded-md hover:bg-indigo-50 {{ request()->routeIs('Dashboard.loyalty.*') ? 'bg-indigo-100 font-semibold text-indigo-700' : '' }}">
+                    Loyalty
+                </a>
+            </nav>
+        </aside>
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+        {{-- BAGIAN KANAN (HEADER + ISI HALAMAN) --}}
+        <div class="flex-1 ml-64 flex flex-col">
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
+            {{-- HEADER / NAVBAR --}}
+            <header class="bg-blue-600 text-white shadow flex justify-between items-center px-6 py-4">
+                <h1 class="text-lg font-semibold">
+                    {{ $pageTitle ?? 'Dashboard' }}
+                </h1>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md shadow">
+                        Logout
+                    </button>
+                </form>
+            </header>
+
+            {{-- KONTEN HALAMAN --}}
+            <main class="flex-1 p-8">
+                @yield('content')
             </main>
         </div>
-    </body>
+    </div>
+
+</body>
 </html>
