@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role; // <-- 1. TAMBAHKAN IMPORT MODEL ROLE
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ use Illuminate\View\View;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Menampilkan halaman registrasi.
      */
     public function create(): View
     {
@@ -23,9 +24,7 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * Menangani permintaan registrasi baru.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -35,10 +34,14 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // 2. CARI ID UNTUK ROLE 'CUSTOMER'
+        $customerRole = Role::where('name', 'customer')->firstOrFail();
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => $customerRole->id, // <-- 3. TETAPKAN ROLE_ID SAAT USER DIBUAT
         ]);
 
         event(new Registered($user));
