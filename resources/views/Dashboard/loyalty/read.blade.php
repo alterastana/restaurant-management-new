@@ -24,7 +24,7 @@
                 </div>
                 <div>
                     <h2 class="text-sm font-bold text-gray-500 uppercase">Harga</h2>
-                    <p class="text-xl text-gray-800 font-semibold text-indigo-600">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
+                    <p class="text-xl text-gray-800 font-semibold text-brand-primary">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
                 </div>
                 <div>
                     <h2 class="text-sm font-bold text-gray-500 uppercase">Deskripsi</h2>

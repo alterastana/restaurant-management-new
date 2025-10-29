@@ -11,7 +11,7 @@
         </div>
         
         @if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('manager'))
-            <a href="{{ route('Dashboard.restoran.create') }}" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-lg">
+            <a href="{{ route('Dashboard.restoran.create') }}" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 btn-secondary text-white text-sm font-medium rounded-lg shadow-lg focus-brand">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6-0H6"></path></svg>
                 <span>Tambah Restoran</span>
             </a>
@@ -30,7 +30,7 @@
             {{-- =================================== --}}
             {{--       HEADER TABEL BIRU          --}}
             {{-- =================================== --}}
-            <thead class="bg-indigo-600">
+            <thead class="bg-brand-primary">
                 <tr>
                     <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Nama & Email</th>
                     <th class="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">Alamat</th>

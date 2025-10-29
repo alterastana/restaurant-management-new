@@ -8,7 +8,7 @@
         <h1 class="text-3xl font-bold text-gray-800">Selamat Datang Kembali, {{ Auth::user()->name }}!</h1>
         <p class="mt-1 text-gray-600">
             Anda login sebagai 
-            <span class="font-semibold text-indigo-600">
+            <span class="font-semibold text-brand-primary">
                 {{ Auth::user()->role->display_name ?? 'User' }}
             </span>. Ini adalah ringkasan aktivitas hari ini.
         </p>
@@ -21,8 +21,8 @@
         @if(Auth::user()->hasRole('admin') || Auth::user()->hasRole('manager'))
         <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
             <div class="flex items-center">
-                <div class="p-3 bg-blue-100 rounded-xl">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                <div class="p-3 bg-brand-tint rounded-xl">
+                    <svg class="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-500">Total Restoran</p>

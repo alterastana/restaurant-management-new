@@ -12,9 +12,14 @@ class LoyaltyController extends Controller
     /**
      * Menampilkan daftar data loyalty.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $loyaltyData = Loyalty::with('customer')->latest()->paginate(10);
+        $perPage = $request->input('show_more') ? 100 : 10;
+        $loyaltyData = Loyalty::with('customer')->latest()->paginate($perPage);
+        
+        if ($request->ajax()) {
+            return view('Dashboard.loyalty.table', ['rewards' => $loyaltyData])->render();
+        }
         return view('Dashboard.loyalty.index', ['rewards' => $loyaltyData]);
     }
 

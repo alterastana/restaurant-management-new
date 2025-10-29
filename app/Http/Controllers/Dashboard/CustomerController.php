@@ -4,15 +4,21 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Customer;
 
 class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('Dashboard.customer.index');
+        $perPage = $request->input('show_more') ? 100 : 10;
+        $customers = Customer::orderBy('created_at', 'desc')->paginate($perPage);
+        if ($request->ajax()) {
+            return view('Dashboard.customer.table', compact('customers'))->render();
+        }
+        return view('Dashboard.customer.index', compact('customers'));
     }
 
     /**
@@ -20,7 +26,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        //
+        return view('Dashboard.customer.create');
     }
 
     /**
@@ -28,7 +34,17 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:1000',
+        ]);
+
+        Customer::create($data);
+
+        return redirect()->route('Dashboard.customer.index')
+                         ->with('success', 'Customer berhasil ditambahkan.');
     }
 
     /**
@@ -36,7 +52,8 @@ class CustomerController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+        return view('Dashboard.customer.read', compact('customer'));
     }
 
     /**
@@ -44,7 +61,8 @@ class CustomerController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+        return view('Dashboard.customer.update', compact('customer'));
     }
 
     /**
@@ -52,7 +70,19 @@ class CustomerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:1000',
+        ]);
+
+        $customer->update($data);
+
+        return redirect()->route('Dashboard.customer.index')
+                         ->with('success', 'Customer berhasil diperbarui.');
     }
 
     /**
@@ -60,6 +90,10 @@ class CustomerController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+        $customer->delete();
+
+        return redirect()->route('Dashboard.customer.index')
+                         ->with('success', 'Customer berhasil dihapus.');
     }
 }

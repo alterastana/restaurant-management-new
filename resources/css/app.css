@@ -1,3 +1,6 @@
+/* Import theme overrides so Vite bundles theme into app.css */
+@import './theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -1,0 +1,92 @@
+:root {
+    --brand-bg: #fff8f0; /* landing background */
+    --brand-primary: #c0392b; /* navbar / primary */
+    --brand-accent: #f39c12; /* accent / CTA */
+    --brand-text: #333333;
+    --brand-surface: #ffffff;
+}
+
+/* High-level helpers used in Blade layouts */
+.bg-brand-bg { background-color: var(--brand-bg); }
+.text-brand-text { color: var(--brand-text); }
+.bg-brand-primary { background-color: var(--brand-primary); color: #fff; }
+.text-brand-primary { color: var(--brand-primary); }
+.brand-accent { color: var(--brand-accent); }
+
+/* Cards / surface */
+.card {
+    background: var(--brand-surface);
+    border-radius: 1rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card:hover { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
+
+/* Buttons */
+.btn-primary {
+    background: var(--brand-accent);
+    color: #fff;
+    padding: 0.6rem 1.1rem;
+    border-radius: 0.6rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-primary:hover { background: #e67e22; }
+
+.btn-secondary {
+    background: var(--brand-primary);
+    color: #fff;
+    padding: 0.45rem 0.9rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+}
+.btn-secondary:hover { background: #a93226; }
+
+/* Navbar (for dashboard header) */
+.navbar-brand {
+    background: var(--brand-primary);
+    color: #fff;
+}
+
+/* Sidebar specific */
+.sidebar-root { background: linear-gradient(180deg, var(--brand-surface), #fff); }
+.sidebar-title { color: var(--brand-primary); font-weight: 700; }
+.sidebar-link { color: var(--brand-text); }
+.sidebar-link:hover { color: #000; background: rgba(192,57,43,0.06); }
+
+/* Small utilities */
+.rounded-2xl { border-radius: 1rem; }
+
+/* Tints and form focus utilities */
+.bg-brand-tint { background: rgba(192,57,43,0.06); }
+
+/* Input / form styles to replace Tailwind indigo focus classes */
+.form-input {
+    border: 1px solid #d1d5db; /* gray-300 fallback */
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    box-shadow: none;
+}
+.form-input:focus {
+    outline: none;
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 4px rgba(192,57,43,0.12);
+}
+
+/* Accessible focus helper for buttons/links when using plain CSS classes */
+.focus-brand:focus { box-shadow: 0 0 0 4px rgba(192,57,43,0.12); outline: none; }
+
+/* small helpers used in components */
+.text-brand-muted { color: #6b7280; }
+
+/* Active nav helpers */
+.active-brand { border-bottom-width: 2px; border-bottom-style: solid; border-bottom-color: var(--brand-primary); color: var(--brand-primary); }
+.active-left-brand { border-left-width: 4px; border-left-style: solid; border-left-color: var(--brand-primary); color: var(--brand-primary); background: rgba(192,57,43,0.04); }
+
+/* Simple animations */
+.animate-fade-in { animation: fadeIn 420ms ease both; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}

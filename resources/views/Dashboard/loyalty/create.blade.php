@@ -11,7 +11,7 @@
                     <select name="customer_id" id="customer_id" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm" required>
                         <option value="">Pilih Customer</option>
                         @foreach($customers as $customer)
-                            <option value="{{ $customer->id }}">{{ $customer->name }} ({{ $customer->email }})</option>
+                            <option value="{{ $customer->customer_id }}">{{ $customer->name }} ({{ $customer->email }})</option>
                         @endforeach
                     </select>
                 </div>
@@ -26,7 +26,7 @@
             </div>
             <div class="flex justify-end mt-8">
                 <a href="{{ route('Dashboard.loyalty.index') }}" class="py-2 px-6 rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300 mr-4">Batal</a>
-                <button type="submit" class="py-2 px-6 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Simpan</button>
+                <button type="submit" class="py-2 px-6 btn-secondary text-white rounded-lg focus-brand">Simpan</button>
             </div>
         </form>
     </div>
