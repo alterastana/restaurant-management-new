@@ -47,7 +47,7 @@
 
             <div class="flex items-center justify-end mt-8 gap-4">
                 <a href="{{ route('Dashboard.restoran.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg">Batal</a>
-                <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md">Update</button>
+                <button type="submit" class="px-6 py-2 text-sm font-medium text-white btn-secondary rounded-lg shadow-md focus-brand">Update</button>
             </div>
         </form>
     </div>

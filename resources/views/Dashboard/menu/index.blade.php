@@ -1,16 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
-@section('content')
-<div class="p-6 bg-gray-100 min-h-screen">
+@section('header')
+<div class="flex justify-between items-center">
+    <h1 class="text-xl font-semibold text-gray-800">Daftar Menu Restoran</h1>
+    <a href="{{ route('Dashboard.menu.create') }}"
+       class="btn-secondary px-4 py-2 rounded-lg">
+        Tambah Menu
+    </a>
+</div>
+@endsection
 
-    {{-- HEADER --}}
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-semibold text-gray-800">Daftar Menu Restoran</h1>
-        <a href="{{ route('Dashboard.menu.create') }}"
-           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md shadow">
-            Tambah Menu
-        </a>
-    </div>
+@section('dashboard-content')
+<div class="bg-white rounded-lg shadow-sm">
 
     {{-- SEARCH BOX --}}
     <div class="mb-4">
@@ -23,7 +24,7 @@
     {{-- TABLE --}}
     <div class="bg-white shadow rounded-lg overflow-hidden">
         <table class="w-full border-collapse" id="menuTable">
-            <thead class="bg-blue-600 text-white">
+            <thead class="bg-brand-primary text-white">
                 <tr>
                     <th class="py-3 px-4 text-left">No</th>
                     <th class="py-3 px-4 text-left">Nama Menu</th>
@@ -34,66 +35,64 @@
                     <th class="py-3 px-4 text-center w-48">Aksi</th>
                 </tr>
             </thead>
-            <tbody>
-                @forelse ($menus as $index => $menu)
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="py-3 px-4">{{ $index + 1 }}</td>
-                        <td class="py-3 px-4 font-semibold">{{ $menu->name }}</td>
-                        <td class="py-3 px-4 text-gray-700">{{ $menu->description }}</td>
-                        <td class="py-3 px-4">Rp {{ number_format($menu->price, 0, ',', '.') }}</td>
-                        <td class="py-3 px-4">{{ $menu->stock }}</td>
-                        <td class="py-3 px-4">{{ $menu->restaurant_id }}</td>
-                        <td class="py-3 px-4 text-center">
-                            <div class="flex justify-center gap-2">
-                                {{-- VIEW --}}
-                                <a href="{{ route('Dashboard.menu.show', $menu->menu_id) }}"
-                                   class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-center">
-                                    View
-                                </a>
-
-                                {{-- EDIT --}}
-                                <a href="{{ route('Dashboard.menu.edit', $menu->menu_id) }}"
-                                   class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-center">
-                                    Edit
-                                </a>
-
-                                {{-- DELETE --}}
-                                <form action="{{ route('Dashboard.menu.destroy', $menu->menu_id) }}"
-                                      method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            onclick="return confirm('Yakin ingin menghapus menu ini?')"
-                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-center">
-                                        Delete
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-4 text-gray-500">
-                            Tidak ada data menu.
-                        </td>
-                    </tr>
-                @endforelse
+            <tbody id="menu-table-body">
+                @include('Dashboard.menu.table')
             </tbody>
         </table>
     </div>
 
+    <div class="mt-4 flex justify-center">
+        <button id="show-more-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors" onclick="loadMore()" style="{{ $menus->hasMorePages() ? '' : 'display: none;' }}">
+            Tampilkan Lebih Banyak
+        </button>
+    </div>
 </div>
 
-{{-- SCRIPT FILTER PENCARIAN --}}
+{{-- SCRIPT FILTER PENCARIAN DAN SHOW MORE --}}
 <script>
+let searchTimeout;
 document.getElementById('searchBox').addEventListener('keyup', function() {
+    const button = document.getElementById('show-more-btn');
     const value = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#menuTable tbody tr');
+    
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        const rows = document.querySelectorAll('#menuTable tbody tr');
+        if (value === '') {
+            rows.forEach(row => row.style.display = '');
+            if (button) button.style.display = '';
+            return;
+        }
 
-    rows.forEach(row => {
-        const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-        row.style.display = name.includes(value) ? '' : 'none';
-    });
+        rows.forEach(row => {
+            const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            row.style.display = name.includes(value) ? '' : 'none';
+        });
+        
+        if (button) button.style.display = 'none';
+    }, 300);
 });
+
+function loadMore() {
+    const button = document.getElementById('show-more-btn');
+    button.disabled = true;
+    button.innerText = 'Loading...';
+
+    fetch('{{ route("Dashboard.menu.index") }}?show_more=true', {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('menu-table-body').innerHTML = html;
+        button.style.display = 'none';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.disabled = false;
+        button.innerText = 'Tampilkan Lebih Banyak';
+    });
+}
 </script>
 @endsection

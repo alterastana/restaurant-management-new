@@ -1,31 +1,30 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restoran Lezat</title>
-    <link rel="stylesheet" href="style.css">
+    <title>{{ config('app.name') }}</title>
+    @vite(['resources/css/app.css'])
 </head>
 <body>
-    <header class="navbar">
-        <div class="logo">🍽️ Restoran Lezat</div>
+    <header class="navbar bg-brand-primary text-white">
+        <div class="logo">{{ config('app.name') }}</div>
         <nav>
-            <a href="index.php">Beranda</a>
+            <a href="{{ route('landingpage.index') }}">Home</a>
             <a href="{{ route('landingpage.menu') }}">Menu</a>
         </nav>
     </header>
 
     <section class="hero">
-        <div class="hero-content">
-            <h1>Selamat Datang di <span>Restoran Lezat</span></h1>
-            <p>Temukan cita rasa terbaik dari bahan pilihan dan chef profesional kami.</p>
-            <a href="{{ route('landingpage.menu') }}" class="btn-primary">🍜 Pesan Sekarang</a>
+        <div class="hero-content animate-fade-in">
+            <h1>Welcome to <span class="brand-accent">{{ config('app.name') }}</span></h1>
+            <p>Discover the best flavors made from quality ingredients by our professional chefs.</p>
+            <a href="{{ route('landingpage.menu') }}" class="btn-primary">🍜 Order Now</a>
         </div>
     </section>
 
-    <footer>
-        <p>© <?= date('Y') ?> Restoran Lezat. Semua hak dilindungi.</p>
+    <footer class="bg-brand-primary text-white py-4 text-center mt-12">
+    <p>© <?= date('Y') ?> {{ config('app.name') }}. All rights reserved.</p>
     </footer>
 </body>
 </html>
-@vite('resources/css/style.css')

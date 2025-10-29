@@ -11,9 +11,14 @@ class MenuController extends Controller
     /**
      * 🧾 Tampilkan semua data menu
      */
-    public function index()
+    public function index(Request $request)
     {
-        $menus = Menu::latest()->get(); // lebih ringkas dari orderBy('created_at', 'desc')
+        $perPage = $request->input('show_more') ? 100 : 10;
+        $menus = Menu::latest()->paginate($perPage);
+        
+        if ($request->ajax()) {
+            return view('Dashboard.menu.table', compact('menus'))->render();
+        }
         return view('Dashboard.menu.index', compact('menus'));
     }
 

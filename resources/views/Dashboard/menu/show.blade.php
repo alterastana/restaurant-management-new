@@ -22,7 +22,7 @@
         </div>
 
         <a href="{{ route('Dashboard.menu.index') }}"
-           class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+           class="mt-4 inline-block btn-secondary text-white px-4 py-2 rounded-md focus-brand">
            Kembali
         </a>
     </div>

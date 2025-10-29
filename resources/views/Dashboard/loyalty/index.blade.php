@@ -1,10 +1,13 @@
-@extends('Dashboard.layout.master')
-@section('title', 'Data Poin Loyalty')
-@section('content')
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800">Data Poin Loyalty Customer</h1>
-        <a href="{{ route('Dashboard.loyalty.create') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg">Tambah Data</a>
+@extends('layouts.dashboard')
+
+@section('header')
+    <div class="flex justify-between items-center">
+        <h1 class="text-xl font-semibold text-gray-800">Data Poin Loyalty</h1>
+        <a href="{{ route('Dashboard.loyalty.create') }}" class="btn-secondary px-4 py-2 rounded-lg">Tambah Data</a>
     </div>
+@endsection
+
+@section('dashboard-content')
     
     @if(session('success'))
         <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">{{ session('success') }}</div>
@@ -12,36 +15,48 @@
 
     <div class="bg-white rounded-2xl shadow-lg overflow-x-auto">
         <table class="min-w-full">
-            <thead class="bg-indigo-600">
+            <thead class="bg-brand-primary">
                 <tr>
+                    <th class="px-6 py-4 text-left text-white">No</th>
                     <th class="px-6 py-4 text-left text-white">Nama Customer</th>
                     <th class="px-6 py-4 text-left text-white">Poin</th>
                     <th class="px-6 py-4 text-left text-white">Level Membership</th>
                     <th class="px-6 py-4 text-center text-white">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="divide-y">
-                @forelse($rewards as $data)
-                    <tr class="hover:bg-gray-50">
-                        {{-- INI BAGIAN YANG DIUBAH --}}
-                        <td class="px-6 py-4 font-medium">{{ $data->customer->name ?? 'Customer Dihapus' }}</td>
-                        <td class="px-6 py-4">{{ number_format($data->points) }}</td>
-                        <td class="px-6 py-4">{{ $data->membership_level }}</td>
-                        <td class="px-6 py-4 text-center">
-                            <div class="flex justify-center space-x-2">
-                                <a href="{{ route('Dashboard.loyalty.edit', $data) }}" class="py-2 px-3 bg-yellow-500 text-white rounded">Edit</a>
-                                <form action="{{ route('Dashboard.loyalty.destroy', $data) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="py-2 px-3 bg-red-500 text-white rounded">Hapus</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="4" class="text-center py-12">Belum ada data poin.</td></tr>
-                @endforelse
+            <tbody class="divide-y" id="loyalty-table-body">
+                @include('Dashboard.loyalty.table')
             </tbody>
         </table>
     </div>
+
+    <div class="mt-4 flex justify-center">
+        <button id="show-more-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors" onclick="loadMore()" style="{{ $rewards->hasMorePages() ? '' : 'display: none;' }}">
+            Tampilkan Lebih Banyak
+        </button>
+    </div>
+
+    <script>
+    function loadMore() {
+        const button = document.getElementById('show-more-btn');
+        button.disabled = true;
+        button.innerText = 'Loading...';
+
+        fetch('{{ route("Dashboard.loyalty.index") }}?show_more=true', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('loyalty-table-body').innerHTML = html;
+            button.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            button.disabled = false;
+            button.innerText = 'Tampilkan Lebih Banyak';
+        });
+    }
+    </script>
 @endsection

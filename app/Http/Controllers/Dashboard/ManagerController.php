@@ -40,7 +40,10 @@ class ManagerController extends Controller
             'role_id'  => 2, // role manager
         ]);
 
-        return redirect()->route('Dashboard.manager.index')
+        // ========================================================
+        // PERBAIKAN: Menggunakan rute 'users.index'
+        // ========================================================
+        return redirect()->route('Dashboard.users.index')
                          ->with('success', 'Manager berhasil ditambahkan.');
     }
 
@@ -49,7 +52,6 @@ class ManagerController extends Controller
         $manager = User::where('role_id', 2)->findOrFail($id);
         return view('Dashboard.manager.read', compact('manager'));
     }
-
 
     // Form edit manager
     public function edit($id)
@@ -75,11 +77,14 @@ class ManagerController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => $request->password 
-                           ? Hash::make($request->password) 
-                           : $manager->password,
+                            ? Hash::make($request->password) 
+                            : $manager->password,
         ]);
 
-        return redirect()->route('Dashboard.manager.index')
+        // ========================================================
+        // PERBAIKAN: Menggunakan rute 'users.index'
+        // ========================================================
+        return redirect()->route('Dashboard.users.index')
                          ->with('success', 'Data manager berhasil diperbarui.');
     }
 
@@ -89,7 +94,10 @@ class ManagerController extends Controller
         $manager = User::where('role_id', 2)->findOrFail($id);
         $manager->delete();
 
-        return redirect()->route('Dashboard.manager.index')
+        // ========================================================
+        // PERBAIKAN: Menggunakan rute 'users.index'
+        // ========================================================
+        return redirect()->route('Dashboard.users.index')
                          ->with('success', 'Manager berhasil dihapus.');
     }
 }

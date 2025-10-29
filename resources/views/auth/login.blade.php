@@ -21,17 +21,17 @@
                     {{-- (Input email dan password Anda di sini) --}}
                     <label class="block">
                         <span class="text-gray-700 text-sm">Email</span>
-                        <input type="email" name="email" autofocus required value="{{ old('email') }}" class="form-control mt-1 block w-full rounded-lg border border-gray-300 focus:border-indigo-600 focus:ring-indigo-600 shadow-sm px-4 py-2">
+                        <input type="email" name="email" autofocus required value="{{ old('email') }}" class="form-input form-control mt-1 block w-full px-4 py-2 rounded-lg shadow-sm">
                     </label>
                     <label class="block mt-3">
                         <span class="text-gray-700 text-sm">Password</span>
-                        <input type="password" name="password" required class="form-control mt-1 block w-full rounded-lg border border-gray-300 focus:border-indigo-600 focus:ring-indigo-600 shadow-sm px-4 py-2">
+                        <input type="password" name="password" required class="form-input form-control mt-1 block w-full px-4 py-2 rounded-lg shadow-sm">
                     </label>
                     
                     {{-- (Kode "Remember me" dan "Forgot password" Anda di sini) --}}
 
                     <div class="mt-6">
-                        <button class="py-2 px-4 text-center bg-indigo-600 rounded-md w-full text-white text-sm hover:bg-indigo-500">
+                        <button class="py-2 px-4 text-center btn-secondary rounded-md w-full text-white text-sm focus-brand">
                             Sign in
                         </button>
                     </div>
@@ -42,7 +42,7 @@
                     <div class="text-center mt-6">
                         <p class="text-sm text-gray-600">
                             Belum punya akun?
-                            <a class="underline text-indigo-700 hover:underline font-semibold" href="{{ route('register') }}">
+                            <a class="underline text-brand-primary hover:underline font-semibold" href="{{ route('register') }}">
                                 Daftar sekarang
                             </a>
                         </p>

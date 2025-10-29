@@ -28,7 +28,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('Dashboard.index'));
+        // INI ADALAH BARIS YANG DIPERBAIKI
+        return redirect()->intended(route('dashboard'));
     }
 
     /**
