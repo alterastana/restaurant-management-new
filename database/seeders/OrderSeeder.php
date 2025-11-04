@@ -20,6 +20,7 @@ class OrderSeeder extends Seeder
                 'order_type'    => $faker->randomElement(['dine-in', 'takeaway']),
                 'order_date'    => $faker->dateTime,
                 'status'        => $faker->randomElement(['pending', 'completed', 'cancelled']),
+                'total_amount'  => $faker->randomFloat(2, 10, 500), // Tambahkan ini
             ]);
         }
     }

@@ -18,12 +18,16 @@ use Illuminate\Support\Facades\Auth;
 
 // Halaman utama diarahkan ke welcome view
 Route::get('/', function () {
-    return view('welcome');
+    $menus = \App\Models\Menu::all();
+    return view('welcome', ['menus' => $menus]);
 });
 
 // Public restaurants & menu (customer-facing)
 Route::get('/restaurants', [App\Http\Controllers\LandingController::class, 'restaurants'])->name('landing.restaurants');
 Route::get('/restaurants/{restoran}', [App\Http\Controllers\LandingController::class, 'show'])->name('landing.restoran.show');
+Route::get('/menus', [App\Http\Controllers\LandingController::class, 'menus'])->name('landing.menus');
+Route::get('/checkout', [App\Http\Controllers\LandingController::class, 'checkout'])->name('landing.checkout');
+Route::post('/order', [App\Http\Controllers\LandingController::class, 'storeOrder'])->name('landing.order.store');
 
 // Landing page utama
 Route::get('/landing', fn() => view('landingpage.index'))
