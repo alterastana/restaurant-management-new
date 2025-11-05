@@ -21,25 +21,18 @@
         }
     </style>
 </head>
-<body class="antialiased">
+<body x-data="menuApp()" class="antialiased">
     <!-- Navigation -->
     <nav class="navbar">
         <div class="navbar-inner">
-            <a href="/" class="brand-pill">
+        <a href="/" class="brand-pill">
                 <img src="{{ asset('images/logo.png') }}"  class="logo">
                 <span class="brand-text">Restoran Lezat</span>
             </a>
             
             <div class="nav-links">
-                <a href="{{ route('landing.restaurants') }}">Restaurants</a>
-                <a href="{{ route('landing.restaurants') }}#menus">Menus</a>
-                <a href="{{ route('landingpage.menu') }}#reservations">Reservations</a>
-                @guest
-                    <a href="{{ route('login') }}">Login</a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}">Register</a>
-                    @endif
-                @endguest
+                <a href="/">Home</a>
+                <a href="#menus">Order</a>
             </div>
         </div>
     </nav>
@@ -56,14 +49,6 @@
                     <p class="text-lg text-gray-600 mb-8">
                         Explore local restaurants, view complete menus, and easily make orders or reservations. Discover top-rated flavors from our curated selection of dining spots.
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="{{ route('landing.restaurants') }}" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-brand-primary hover:bg-brand-primary/90 transition">
-                            View Restaurants
-                        </a>
-                        <a href="{{ route('landingpage.menu') }}" class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition">
-                            View Menu
-                        </a>
-                    </div>
                 </div>
                 <div class="animate__animated animate__fadeInRight">
                     <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" 
@@ -76,22 +61,69 @@
 
     <!-- Features Section removed per request -->
 
-    <!-- Call to Action -->
-    <section class="py-20 bg-brand-primary">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 animate__animated animate__fadeInUp">
-                Ready to Transform Your Restaurant Management?
-            </h2>
-            <p class="text-lg text-white/90 mb-8 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
-                Join thousands of restaurants already using our platform
-            </p>
-            <a href="{{ route('register') }}" 
-               class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-brand-primary bg-white hover:bg-gray-50 shadow-lg transition transform hover:-translate-y-0.5 animate__animated animate__fadeInUp"
-               style="animation-delay: 0.4s; z-index: 20; position: relative;">
-                Get Started Now
-            </a>
+    <!-- Menu Section -->
+    <section id="menus" class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center">
+                <h2 class="text-base text-green-600 font-semibold tracking-wide uppercase">Menu</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    Explore Our Delicious Menus
+                </p>
+                <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+                    Browse a variety of cuisines and dishes from top local restaurants.
+                </p>
+            </div>
+            <div class="mt-10 grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            @forelse($menus as $menu)
+                    <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
+                        <h3 class="text-xl font-semibold text-gray-900">{{ $menu->name }}</h3>
+                        <p class="mt-2 text-gray-600 flex-grow">{{ $menu->description }}</p>
+                        <div class="flex justify-between items-center mt-4">
+                            <p class="text-lg font-bold" style="color: var(--brand);">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
+                            <div class="mt-2">
+                                <template x-if="!getCartItem({{ $menu->menu_id }})">
+                                    <button @click="addToCart({{ json_encode($menu) }})" class="w-10 h-10 flex items-center justify-center px-2 py-1 border border-transparent text-base font-medium rounded-md text-white bg-brand-primary hover:bg-brand-primary/90 transition">
+                                        +
+                                    </button>
+                                </template>
+                                <template x-if="getCartItem({{ $menu->menu_id }})">
+                                    <div class="flex items-center border border-gray-300 rounded-md">
+                                        <button @click="updateQuantity({{ $menu->menu_id }}, -1)" class="w-10 h-10 flex items-center justify-center text-lg font-medium text-gray-600 hover:bg-gray-100 transition">-</button>
+                                        <span x-text="getCartItem({{ $menu->menu_id }}).quantity" class="px-4 text-lg font-medium"></span>
+                                        <button @click="updateQuantity({{ $menu->menu_id }}, 1)" class="w-10 h-10 flex items-center justify-center text-lg font-medium text-gray-600 hover:bg-gray-100 transition">+</button>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-center text-gray-500 col-span-full">No menus available at the moment.</p>
+                @endforelse
+            </div>
         </div>
     </section>
+
+    <!-- Sticky Cart Footer -->
+    <div x-show="totalItems > 0" class="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)] p-4" style="display: none;" x-transition>
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <!-- Cart Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <div class="flex items-center gap-3 overflow-x-auto">
+                    <template x-for="item in cart" :key="item.menu_id">
+                        <div class="text-sm bg-gray-100 px-2 py-1 rounded">
+                            <span x-text="item.name"></span> (<span x-text="item.quantity"></span>)
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <a href="{{ route('landing.checkout') }}" class="flex-shrink-0 ml-4 px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-brand-primary hover:bg-brand-primary/90 transition">
+                Checkout
+            </a>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
@@ -124,5 +156,36 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        function menuApp() {
+            return {
+                cart: [],
+                addToCart(menu) {
+                    const existingItem = this.cart.find(item => item.menu_id === menu.menu_id);
+                    if (existingItem) {
+                        existingItem.quantity++;
+                    } else {
+                        this.cart.push({ menu_id: menu.menu_id, name: menu.name, price: menu.price, quantity: 1 });
+                    }
+                },
+                updateQuantity(menuId, change) {
+                    const item = this.cart.find(item => item.menu_id === menuId);
+                    if (item) {
+                        item.quantity += change;
+                        if (item.quantity <= 0) {
+                            this.cart = this.cart.filter(i => i.menu_id !== menuId);
+                        }
+                    }
+                },
+                getCartItem(menuId) {
+                    return this.cart.find(item => item.menu_id === menuId);
+                },
+                get totalItems() {
+                    return this.cart.reduce((total, item) => total + item.quantity, 0);
+                }
+            }
+        }
+    </script>
 </body>
 </html>
