@@ -12,9 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('loyalties', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        $table->id('loyalty_id');
+        $table->foreignId('customer_id')->constrained('customers', 'customer_id')->cascadeOnDelete();
+        $table->integer('points')->default(0);
+        $table->enum('membership_level', ['Silver', 'Gold', 'Platinum'])->default('Silver');
+        $table->decimal('discount_amount', 10, 2)->default(2000);
+        $table->timestamps();
+    });
     }
 
     /**

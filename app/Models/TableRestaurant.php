@@ -19,10 +19,12 @@ class TableRestaurant extends Model
         'status',
     ];
 
+    public $timestamps = false; // Tambahkan jika tabel tidak punya created_at & updated_at
+
     /**
-     * Relasi ke model Restoran.
+     * Relasi ke model Restaurant.
      */
-    public function restoran()
+    public function restaurant()
     {
         // Hubungkan 'restaurant_id' di tabel ini ke 'restaurant_id' di tabel 'restaurants'
         return $this->belongsTo(Restoran::class, 'restaurant_id', 'restaurant_id');

@@ -29,5 +29,13 @@ class UserSeeder extends Seeder
             'role_id' => $roles['manager'],
         ]);
 
+        User::create([
+            'name' => 'Cashier Resto',
+            'email' => 'cashier@resto.com',
+            'phone' => '08123456789',
+            'password' => Hash::make('password'),
+            'role_id' => $roles['cashier'],
+        ]);
+
     }
 }
