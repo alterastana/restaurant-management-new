@@ -3,23 +3,29 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
+use App\Models\Payment;
+use Carbon\Carbon;
 
 class PaymentSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
+        Payment::create([
+            'order_id' => 1,
+            'reservation_id' => null,
+            'payment_method' => 'Credit Card',
+            'amount' => 250000.00,
+            'payment_date' => Carbon::now(),
+            'status' => 'completed',
+        ]);
 
-        foreach (range(1, 25) as $i) {
-            DB::table('payments')->insert([
-                'order_id' => $i,
-                'payment_date' => $faker->dateTime,
-                'payment_method' => $faker->randomElement(['cash', 'credit_card', 'ewallet']),
-                'amount' => $faker->randomFloat(2, 20, 500),
-                'status' => $faker->randomElement(['paid', 'pending', 'failed']),
-            ]);
-        }
+        Payment::create([
+            'order_id' => null,
+            'reservation_id' => 1,
+            'payment_method' => 'Cash',
+            'amount' => 500000.00,
+            'payment_date' => Carbon::now(),
+            'status' => 'pending',
+        ]);
     }
 }

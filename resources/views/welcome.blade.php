@@ -5,31 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Restoran Lezat — Find Restaurants & Menus</title>
     @vite(['resources/css/app.css', 'resources/css/style.css', 'resources/js/app.js'])
-    <!-- Add Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <!-- Add Alpine.js -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <!-- Add Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
+        body { font-family: 'Poppins', sans-serif; }
         .hero-pattern {
             background-color: #ffffff;
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f3f4f6' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
     </style>
 </head>
-<body x-data="menuApp()" class="antialiased">
+<body x-data="menuApp()" x-init="init()" class="antialiased">
     <!-- Navigation -->
     <nav class="navbar">
         <div class="navbar-inner">
-        <a href="/" class="brand-pill">
-                <img src="{{ asset('images/logo.png') }}"  class="logo">
+            <a href="/" class="brand-pill">
+                <img src="{{ asset('images/logo.png') }}" class="logo">
                 <span class="brand-text">Restoran Lezat</span>
             </a>
-            
             <div class="nav-links">
                 <a href="/">Home</a>
                 <a href="#menus">Order</a>
@@ -38,7 +32,6 @@
     </nav>
 
     <!-- Hero Section -->
-    <!-- ensure top padding matches nav height (h-16) so content not hidden under fixed nav -->
     <section class="hero-pattern min-h-screen flex items-center pt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -51,15 +44,13 @@
                     </p>
                 </div>
                 <div class="animate__animated animate__fadeInRight">
-                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" 
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1470&q=80" 
                          alt="Restaurant Management" 
                          class="rounded-lg shadow-xl w-full">
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- Features Section removed per request -->
 
     <!-- Menu Section -->
     <section id="menus" class="py-12 bg-gray-50">
@@ -73,8 +64,9 @@
                     Browse a variety of cuisines and dishes from top local restaurants.
                 </p>
             </div>
+
             <div class="mt-10 grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            @forelse($menus as $menu)
+                @forelse($menus as $menu)
                     <div class="bg-white rounded-lg shadow-md p-6 flex flex-col">
                         <h3 class="text-xl font-semibold text-gray-900">{{ $menu->name }}</h3>
                         <p class="mt-2 text-gray-600 flex-grow">{{ $menu->description }}</p>
@@ -107,10 +99,10 @@
     <div x-show="totalItems > 0" class="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)] p-4" style="display: none;" x-transition>
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <!-- Cart Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
+
                 <div class="flex items-center gap-3 overflow-x-auto">
                     <template x-for="item in cart" :key="item.menu_id">
                         <div class="text-sm bg-gray-100 px-2 py-1 rounded">
@@ -119,73 +111,81 @@
                     </template>
                 </div>
             </div>
-            <a href="{{ route('landing.checkout') }}" class="flex-shrink-0 ml-4 px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-brand-primary hover:bg-brand-primary/90 transition">
-                Checkout
-            </a>
+
+            <div class="flex items-center gap-6">
+                <p class="text-lg font-semibold text-gray-800">
+                    Total: Rp <span x-text="totalPrice.toLocaleString('id-ID')"></span>
+                </p>
+
+                <a href="{{ route('landing.checkout') }}" 
+                    @click.prevent="saveCartBeforeCheckout"
+                    class="flex-shrink-0 px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-brand-primary hover:bg-brand-primary/90 transition">
+                    Checkout
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Restoran Lezat</h3>
-                    <p class="text-gray-400">Empowering restaurants with modern management solutions</p>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
-                    <ul class="space-y-2">
-                        <li class="text-gray-400">Email: info@restaurant.com</li>
-                        <li class="text-gray-400">Phone: (123) 456-7890</li>
-                        <li class="text-gray-400">Address: 123 Restaurant St, City</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
-                <p class="text-gray-400">&copy; {{ date('Y') }} Restoran Lezat. All rights reserved.</p>
-            </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-gray-400">&copy; {{ date('Y') }} Restoran Lezat. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        function menuApp() {
-            return {
-                cart: [],
-                addToCart(menu) {
-                    const existingItem = this.cart.find(item => item.menu_id === menu.menu_id);
-                    if (existingItem) {
-                        existingItem.quantity++;
-                    } else {
-                        this.cart.push({ menu_id: menu.menu_id, name: menu.name, price: menu.price, quantity: 1 });
-                    }
-                },
-                updateQuantity(menuId, change) {
-                    const item = this.cart.find(item => item.menu_id === menuId);
-                    if (item) {
-                        item.quantity += change;
-                        if (item.quantity <= 0) {
-                            this.cart = this.cart.filter(i => i.menu_id !== menuId);
-                        }
-                    }
-                },
-                getCartItem(menuId) {
-                    return this.cart.find(item => item.menu_id === menuId);
-                },
-                get totalItems() {
-                    return this.cart.reduce((total, item) => total + item.quantity, 0);
+    function menuApp() {
+        return {
+            cart: [],
+
+            init() {
+                const saved = localStorage.getItem('cart');
+                if (saved) this.cart = JSON.parse(saved);
+                this.$watch('cart', (value) => {
+                    localStorage.setItem('cart', JSON.stringify(value));
+                });
+            },
+
+            addToCart(menu) {
+                const existing = this.cart.find(item => item.menu_id === menu.menu_id);
+                if (existing) existing.quantity++;
+                else this.cart.push({ menu_id: menu.menu_id, name: menu.name, price: menu.price, quantity: 1 });
+            },
+
+            updateQuantity(id, change) {
+                const item = this.cart.find(i => i.menu_id === id);
+                if (item) {
+                    item.quantity += change;
+                    if (item.quantity <= 0) this.cart = this.cart.filter(i => i.menu_id !== id);
                 }
+            },
+
+            getCartItem(id) {
+                return this.cart.find(i => i.menu_id === id);
+            },
+
+            get totalItems() {
+                return this.cart.reduce((sum, i) => sum + i.quantity, 0);
+            },
+
+            get totalPrice() {
+                return this.cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+            },
+
+            saveCartBeforeCheckout() {
+                fetch('{{ route('landing.saveCartSession') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(this.cart)
+                }).then(() => {
+                    window.location.href = '{{ route('landing.checkout') }}';
+                });
             }
         }
+    }
     </script>
+    <script> localStorage.removeItem('cart'); </script>
 </body>
 </html>

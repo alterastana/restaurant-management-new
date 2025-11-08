@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Dashboard\{
     ManagerController,
     CustomerController,
@@ -36,6 +37,18 @@ Route::get('/landing', fn() => view('landingpage.index'))
 // Halaman Menu (misal tombol "Pesan Sekarang")
 Route::get('/menu', fn() => view('landingpage.menu'))
     ->name('landingpage.menu');
+
+
+Route::post('/save-cart-session', [LandingController::class, 'saveCartSession'])->name('landing.saveCartSession');
+Route::get('/', [LandingController::class, 'welcome'])->name('landing.welcome');
+
+Route::get('/checkout', [LandingController::class, 'checkout'])->name('landing.checkout');
+
+// simpan sementara di session
+Route::post('/order/preview', [LandingController::class, 'previewOrder'])->name('landing.order.preview');
+
+// simpan ke database setelah konfirmasi
+Route::post('/order', [LandingController::class, 'storeOrder'])->name('landing.order.store');
 
 // Halaman login manual (bisa override bawaan Laravel Breeze/Jetstream)
 Route::get('/login', fn() => view('auth.login'))
