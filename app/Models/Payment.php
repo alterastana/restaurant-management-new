@@ -20,6 +20,7 @@ class Payment extends Model
         'amount',
         'payment_date',
         'status',
+        'payment_url',
     ];
 
     // Relasi ke Order (opsional)
@@ -33,4 +34,6 @@ class Payment extends Model
     {
         return $this->belongsTo(Reservation::class, 'reservation_id', 'reservation_id');
     }
+
+
 }

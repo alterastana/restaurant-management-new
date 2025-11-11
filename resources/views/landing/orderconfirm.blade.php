@@ -39,12 +39,12 @@
         @endif
 
         <div class="flex justify-center gap-4 mt-6">
-            <form action="{{ route('landing.order.store') }}" method="POST">
-                @csrf
-                <button type="submit" class="px-6 py-3 font-bold text-white bg-green-600 rounded-md hover:bg-green-700">
-                    Konfirmasi & Simpan
-                </button>
-            </form>
+            <form action="{{ route('payment.process') }}" method="POST">
+    @csrf
+    <button type="submit" class="px-6 py-3 font-bold text-white bg-green-600 rounded-md hover:bg-green-700">
+        Konfirmasi & Bayar
+    </button>
+</form>
 
             <a href="{{ route('landing.checkout') }}" class="px-6 py-3 font-bold text-white bg-gray-500 rounded-md hover:bg-gray-600">
                 Kembali

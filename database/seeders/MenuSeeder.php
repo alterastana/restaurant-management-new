@@ -14,7 +14,7 @@ class MenuSeeder extends Seeder
 
         foreach (range(1, 30) as $i) {
             DB::table('menus')->insert([
-                'restaurant_id' => rand(1, 5),
+                'restaurant_id' => 1,
                 'name' => $faker->word,
                 'description' => $faker->sentence,
                 'price' => $faker->randomFloat(2, 10, 100),

@@ -2,38 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Restoran;
 use App\Models\Menu;
 use App\Models\Customer;
+use App\Models\Reservation;
+use App\Models\TableRestaurant;
 use Illuminate\Http\Request;
 
 class LandingController extends Controller
 {
     // ======================================================
-    // 🔹 1. Tampilkan daftar restoran
+    // 🔹 3. Tampilkan semua menu (halaman publik + table number)
     // ======================================================
-    public function restaurants()
+    public function menus(Request $request)
     {
-        $restorans = Restoran::orderBy('name')->get();
-        return view('landing.restaurants', compact('restorans'));
-    }
+        // Ambil nomor meja dari query string (?table=6)
+        $tableNumber = $request->query('table', 1); // default meja 1
+        session(['table_number' => $tableNumber]); // simpan di session
 
-    // ======================================================
-    // 🔹 2. Tampilkan restoran tertentu beserta menunya
-    // ======================================================
-    public function show(Restoran $restoran)
-    {
-        $menus = Menu::where('restaurant_id', $restoran->restaurant_id)->get();
-        return view('landing.restoran', compact('restoran', 'menus'));
-    }
-
-    // ======================================================
-    // 🔹 3. Tampilkan semua menu (halaman publik)
-    // ======================================================
-    public function menus()
-    {
         $menus = Menu::all();
-        return view('landing.menu', compact('menus'));
+        return view('landing.menu', compact('menus', 'tableNumber'));
     }
 
     // ======================================================
@@ -45,52 +32,78 @@ class LandingController extends Controller
     }
 
     // ======================================================
-    // 🔹 5. Simpan data sementara (belum masuk DB)
+    // 🔹 5. Simpan data sementara sebelum konfirmasi
     // ======================================================
-public function previewOrder(Request $request)
-{
-    $validated = $request->validate([
-        'name'    => 'required|string|max:255',
-        'email'   => 'required|email|max:255',
-        'phone'   => 'required|string|max:20',
-    ]);
+    public function previewOrder(Request $request)
+    {
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+        ]);
 
-    // Simpan sementara data order ke session
-    session(['order_data' => $validated]);
+        // Simpan sementara data order ke session
+        session(['order_data' => $validated]);
 
-    // ✅ Ambil data cart dari session (disimpan sebelumnya dari frontend)
-    $cart = session('cart', []);
+        // Ambil cart dari session
+        $cart = session('cart', []);
 
-    // Tampilkan halaman konfirmasi dengan data order dan cart
-    return view('landing.orderconfirm', [
-        'order' => $validated,
-        'cart' => $cart,
-    ]);
-}
+        if (empty($cart)) {
+            return redirect()->route('landing.menus')->with('error', 'Keranjang Anda masih kosong.');
+        }
 
+        return view('landing.orderconfirm', [
+            'order' => $validated,
+            'cart'  => $cart,
+        ]);
+    }
 
     // ======================================================
-    // 🔹 6. Simpan data ke database setelah dikonfirmasi
+    // 🔹 6. Simpan data ke database setelah konfirmasi
     // ======================================================
     public function storeOrder(Request $request)
     {
-        // Ambil data dari session
         $data = session('order_data');
+        $cart = session('cart', []);
+
 
         if (!$data) {
             return redirect()->route('landing.checkout')
-                             ->with('error', 'Data pesanan tidak ditemukan. Silakan isi kembali.');
+                ->with('error', 'Data pesanan tidak ditemukan. Silakan isi kembali.');
         }
 
-        // Simpan ke database (baru disini)
-        $customer = Customer::create($data);
+        if (empty($cart)) {
+            return redirect()->route('landing.menus')
+                ->with('error', 'Keranjang kosong. Silakan pilih menu terlebih dahulu.');
+        }
 
-        // Hapus session setelah disimpan
+        // Cek apakah customer sudah ada
+        $customer = Customer::firstOrCreate(
+            ['phone' => $data['phone']],
+            $data
+        );
+
+        // Simpan customer ke session
+        session(['checkout_customer' => $customer]);
         session()->forget('order_data');
 
-        // Redirect ke halaman sukses
-        return redirect('/')
-            ->with('success', 'Pesanan berhasil dibuat atas nama ' . $customer->name . '!');
+        // 🧩 Tambahan: buat reservasi otomatis berdasarkan nomor meja
+        $tableNumber = session('table_number', 1); // default meja 1
+        $table = TableRestaurant::where('table_number', $tableNumber)->first();
+
+        if ($table) {
+            Reservation::create([
+                'table_id'          => $table->table_id,
+                'customer_id'       => $customer->customer_id,
+                'reservation_date'  => now()->toDateString(),
+                'reservation_time'  => now()->toTimeString(),
+                'status'            => 'confirmed',
+            ]);
+        }
+
+        // Arahkan ke halaman pembayaran
+        return redirect()->route('payment.confirm')
+            ->with('success', 'Pesanan atas nama ' . $customer->name . ' berhasil disimpan dan meja ' . $tableNumber . ' sudah dipesan.');
     }
 
     // ======================================================
@@ -106,16 +119,16 @@ public function previewOrder(Request $request)
     // ======================================================
     // 🔹 8. Halaman utama (Welcome Page)
     // ======================================================
-    public function welcome()
+    public function welcome(Request $request)
     {
-        // Reset session cart setiap kali kembali ke halaman utama
-        session()->forget('cart');
-        session()->forget('checkout_customer');
+        // Ambil nomor meja dari query (misalnya ?table=6)
+        $tableNumber = $request->query('table', 1);
+        session(['table_number' => $tableNumber]);
 
-        // ✅ Ambil semua menu dari database
+        // Reset session cart & customer setiap ke halaman utama
+        session()->forget(['cart', 'checkout_customer']);
+
         $menus = Menu::all();
-
-        // Kirim data ke view
-        return view('welcome', compact('menus'));
+        return view('welcome', compact('menus', 'tableNumber'));
     }
 }

@@ -12,13 +12,13 @@ class RestaurantSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        foreach (range(1, 5) as $i) {
-            DB::table('restaurants')->insert([
-                'name'  => $faker->company,
-                'address' => $faker->address,
-                'phone' => $faker->phoneNumber,
-                'email' => $faker->unique()->safeEmail,
-            ]);
-        }
+        for ($i = 0; $i < 1; $i++) {
+    DB::table('restaurants')->insert([
+        'name'    => $faker->company,
+        'address' => $faker->address,
+        'phone'   => $faker->phoneNumber,
+        'email'   => $faker->unique()->safeEmail,
+    ]);
+}
     }
 }

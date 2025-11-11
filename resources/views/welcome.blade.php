@@ -22,7 +22,7 @@
         <div class="navbar-inner">
             <a href="/" class="brand-pill">
                 <img src="{{ asset('images/logo.png') }}" class="logo">
-                <span class="brand-text">Restoran Lezat</span>
+                <span class="brand-text">Roemah Kuliner</span>
             </a>
             <div class="nav-links">
                 <a href="/">Home</a>
@@ -37,11 +37,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div class="animate__animated animate__fadeInLeft">
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-                        Find the Best Restaurants & Menus Near You
+                        Selamat Datang Pengunjung Roemah Kuliner
                     </h1>
-                    <p class="text-lg text-gray-600 mb-8">
-                        Explore local restaurants, view complete menus, and easily make orders or reservations. Discover top-rated flavors from our curated selection of dining spots.
+                    <p class="text-2xl text-gray-600 mb-8">
+                        Temukan makanan dan minuman terbaik di Roemah Kuliner.
                     </p>
+                    <h1 class="text-3xl text-green-600 font-semibold tracking-wide uppercase">
+    Anda di Meja Nomor {{ $tableNumber ?? session('table_number') ?? '1' }}
+</h1>
+
                 </div>
                 <div class="animate__animated animate__fadeInRight">
                     <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1470&q=80" 
@@ -56,12 +60,13 @@
     <section id="menus" class="py-12 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="lg:text-center">
-                <h2 class="text-base text-green-600 font-semibold tracking-wide uppercase">Menu</h2>
+                
+                <h2 class="text-4xl text-green-600 font-semibold tracking-wide uppercase">Menu</h2>
                 <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                    Explore Our Delicious Menus
+                    Pilih menu makanan dan minuman
                 </p>
                 <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-                    Browse a variety of cuisines and dishes from top local restaurants.
+                    Jelajahi berbagai jenis masakan dan hidangan dari restoran lokal terbaik.
                 </p>
             </div>
 

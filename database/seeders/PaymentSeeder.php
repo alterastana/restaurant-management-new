@@ -17,6 +17,7 @@ class PaymentSeeder extends Seeder
             'amount' => 250000.00,
             'payment_date' => Carbon::now(),
             'status' => 'completed',
+            'payment_url' => 'https://example.com/credit-card-payment',
         ]);
 
         Payment::create([
@@ -26,6 +27,7 @@ class PaymentSeeder extends Seeder
             'amount' => 500000.00,
             'payment_date' => Carbon::now(),
             'status' => 'pending',
+            'payment_url' => 'https://example.com/cash-payment',
         ]);
     }
 }

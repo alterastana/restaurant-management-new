@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Dashboard\{
     ManagerController,
     CustomerController,
@@ -27,8 +28,7 @@ Route::get('/', function () {
 Route::get('/restaurants', [App\Http\Controllers\LandingController::class, 'restaurants'])->name('landing.restaurants');
 Route::get('/restaurants/{restoran}', [App\Http\Controllers\LandingController::class, 'show'])->name('landing.restoran.show');
 Route::get('/menus', [App\Http\Controllers\LandingController::class, 'menus'])->name('landing.menus');
-Route::get('/checkout', [App\Http\Controllers\LandingController::class, 'checkout'])->name('landing.checkout');
-Route::post('/order', [App\Http\Controllers\LandingController::class, 'storeOrder'])->name('landing.order.store');
+
 
 // Landing page utama
 Route::get('/landing', fn() => view('landingpage.index'))
@@ -54,6 +54,8 @@ Route::post('/order', [LandingController::class, 'storeOrder'])->name('landing.o
 Route::get('/login', fn() => view('auth.login'))
     ->name('login');
 
+Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
+Route::get('/payment/waiting', [PaymentController::class, 'waiting'])->name('payment.waiting');
 // =====================================================
 // 🔹 RUTE OTENTIKASI (bawaan Laravel Breeze / Jetstream / Fortify)
 // =====================================================

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->dateTime('payment_date');
             $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
+            $table->text('payment_url')->nullable();
             $table->timestamps();
 
             // Foreign Keys

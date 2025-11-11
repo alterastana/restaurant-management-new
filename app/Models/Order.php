@@ -25,7 +25,6 @@ class Order extends Model
      * Kolom yang boleh diisi secara massal.
      */
     protected $fillable = [
-        'customer_id',
         'restaurant_id',
         'reservation_id',
         'order_type',
@@ -36,10 +35,6 @@ class Order extends Model
     /**
      * Relasi ke Customer (Many to One)
      */
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
-    }
 
     /**
      * Relasi ke Restaurant (Many to One)
