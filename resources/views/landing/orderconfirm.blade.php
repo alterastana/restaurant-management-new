@@ -38,18 +38,51 @@
             <p class="mt-4 text-gray-500">Keranjang kosong.</p>
         @endif
 
-        <div class="flex justify-center gap-4 mt-6">
-            <form action="{{ route('payment.process') }}" method="POST">
-    @csrf
-    <button type="submit" class="px-6 py-3 font-bold text-white bg-green-600 rounded-md hover:bg-green-700">
-        Konfirmasi & Bayar
-    </button>
-</form>
+        <!-- ✅ Form Konfirmasi -->
+        <form action="{{ route('payment.process') }}" method="POST" class="mt-6">
+            @csrf
 
-            <a href="{{ route('landing.checkout') }}" class="px-6 py-3 font-bold text-white bg-gray-500 rounded-md hover:bg-gray-600">
-                Kembali
-            </a>
-        </div>
+            <!-- Pilihan Dine-In / Takeaway -->
+            <div class="text-left">
+                <p class="mb-2 text-gray-700 font-semibold">Pilih Jenis Pesanan:</p>
+
+                <div class="flex flex-col gap-2">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="order_type" value="dine-in" class="text-green-600 border-gray-300 focus:ring-green-500" required>
+                        <span class="ml-2">Dine-In (Makan di tempat)</span>
+                    </label>
+
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="order_type" value="takeaway" class="text-green-600 border-gray-300 focus:ring-green-500" required>
+                        <span class="ml-2">Takeaway (Bawa pulang)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- ✅ Catatan Pelanggan -->
+            <div class="mt-5 text-left">
+                <label for="note" class="block mb-2 text-gray-700 font-semibold">
+                    Catatan Pelanggan (opsional):
+                </label>
+                <textarea 
+                    id="note" 
+                    name="note" 
+                    rows="3" 
+                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                    placeholder="Contoh: tanpa sambal, tambahkan sendok, dsb..."></textarea>
+            </div>
+
+            <!-- Tombol -->
+            <div class="flex justify-center gap-4 mt-6">
+                <button type="submit" class="px-6 py-3 font-bold text-white bg-green-600 rounded-md hover:bg-green-700">
+                    Konfirmasi & Bayar
+                </button>
+
+                <a href="{{ route('landing.checkout') }}" class="px-6 py-3 font-bold text-white bg-gray-500 rounded-md hover:bg-gray-600">
+                    Kembali
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

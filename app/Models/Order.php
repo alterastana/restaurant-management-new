@@ -29,6 +29,7 @@ class Order extends Model
         'reservation_id',
         'order_type',
         'order_date',
+        'total_amount',
         'status',
     ];
 

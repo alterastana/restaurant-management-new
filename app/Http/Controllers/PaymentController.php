@@ -4,116 +4,159 @@ namespace App\Http\Controllers;
 
 use App\Models\Menu;
 use App\Models\Order;
+use App\Models\Reservation;
+use App\Models\TableRestaurant;
+use App\Models\Customer;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Stringable;
+
+use function Symfony\Component\Clock\now;
 
 class PaymentController extends Controller
 {
-public function process(Request $request)
-{
-    // Ambil data dari session
-    $orderData = session('order_data');
-    $cart = session('cart');
+    public function process(Request $request)
+    {
+        // 🔹 Ambil data dari session
+        $orderData = session('order_data');
+        $cart = session('cart');
 
-
-
-    if (empty($orderData) || empty($cart)) {
-        return redirect()->route('landing.checkout')->with('error', 'Data pesanan tidak ditemukan.');
-    }
-
-    // Hitung total harga
-    $totalAmount = collect($cart)->sum(fn($i) => $i['price'] * $i['quantity']);
-
-    // Cek stok produk sebelum lanjut
-    foreach ($cart as $item) {
-        $product = Menu::find($item['menu_id']);
-        if (!$product || $product->stock < $item['quantity']) {
-            return redirect()->route('landing.menu')->with('error', 'Stok produk "' . $item['name'] . '" tidak mencukupi.');
+        if (empty($orderData) || empty($cart)) {
+            return redirect()->route('landing.checkout')->with('error', 'Data pesanan tidak ditemukan.');
         }
-    }
 
-    $expiredHours = (int) config('services.payment.expired_hours', 24);
+        // 🔹 Ambil atau buat data customer
+        $customer = Customer::firstOrCreate(
+            ['email' => $orderData['email']],
+            [
+                'name'  => $orderData['name'],
+                'phone' => $orderData['phone']
+            ]
+        );
 
-    // Simpan order ke database
-    $order = Order::create([
-        'customer_id'     => $orderData['customer_id'] ?? null,
-        'restaurant_id'   => 1,
-        'reservation_id'  => $orderData['reservation_id'] ?? null,
-        'order_type'      => $orderData['order_type'] ?? 'dine-in',
-        'order_date'      => now(),
-        'status'          => 'pending',
-        'total_amount'    => $totalAmount,
-        'notes'           => $orderData['notes'] ?? null,
-        'payment_status'  => 'pending',
-        'payment_method'  => 'virtual_account',
-    ]);
+        // 🔹 Buat reservasi otomatis berdasarkan nomor meja
+        $tableNumber = session('table_number', 1); // default meja 1
+        $table = TableRestaurant::where('table_number', $tableNumber)->first();
 
-    // Simpan detail produk (jika ada tabel order_items)
-    if (method_exists($order, 'items')) {
+        $reservation = null;
+
+        if ($table) {
+            $reservation = Reservation::create([
+                'table_id'          => $table->table_id,
+                'customer_id'       => $customer->customer_id,
+                'reservation_date'  => now(),
+                'reservation_time'  => now(),
+                'status'            => 'pending',
+            ]);
+        }
+
+        // dd($cart);
+        // 🔹 Hitung total harga pesanan
+        $totalAmount = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+        // dd($totalAmount);
+
+        // 🔹 Cek stok setiap produk
         foreach ($cart as $item) {
             $product = Menu::find($item['menu_id']);
-            if ($product) {
-                $order->items()->create([
-                    'product_id' => $product->id,
-                    'quantity'   => $item['quantity'],
-                    'price'      => $product->price,
-                    'subtotal'   => $product->price * $item['quantity'],
-                ]);
-
-                // Kurangi stok produk
-                $product->decrement('stock', $item['quantity']);
+            if (!$product || $product->stock < $item['quantity']) {
+                return redirect()->route('landing.menu')
+                    ->with('error', 'Stok produk "' . $item['name'] . '" tidak mencukupi.');
             }
         }
-    }
 
-    // === Proses Pembuatan Virtual Account ===
-    try {
-        $response = Http::withHeaders([
-            'X-API-Key' => config('services.payment.api_key'),
-            'Accept'    => 'application/json',
-        ])->post(config('services.payment.base_url') . '/virtual-account/create', [
-            'external_id'      => (string) Str::uuid(),
-            'amount'           => $order->total_amount,
-            'customer_name'    => $orderData['customer_name'] ?? 'Pelanggan',
-            'customer_email'   => $orderData['customer_email'] ?? 'noemail@example.com',
-            'customer_phone'   => $orderData['customer_phone'] ?? '081234567890',
-            'description'      => 'Pembayaran pesanan #' . $order->order_id,
-            'expired_duration' => $expiredHours,
-            'callback_url'     => route('orders.success', $order->order_id),
-            'metadata' => [
-                'order_id'    => $order->order_id,
-                'customer_id' => $order->customer_id,
-            ],
+        $expiredHours = (int) config('services.payment.expired_hours', 24);
+
+        // 🔹 Simpan order ke database
+        $order = Order::create([
+            'customer_id'     => $customer->customer_id,
+            'restaurant_id'   => 1,
+            'reservation_id'  => $reservation?->reservation_id, // <- pakai id reservasi yang baru dibuat
+            'order_type'      => $request->input('takeaway', 'dine-in'),
+            'order_date'      => now(),
+            'status'          => 'pending',
+            'total_amount'    => $totalAmount,
+            'notes'           => $request->input('note'),
+            'payment_status'  => 'pending',
+            'payment_method'  => 'virtual_account',
         ]);
 
-        if ($response->successful()) {
-            $data = $response->json();
+        // 🔹 Simpan detail order items (jika relasi tersedia)
+        if (method_exists($order, 'items')) {
+            foreach ($cart as $item) {
+                $product = Menu::find($item['menu_id']);
+                if ($product) {
+                    $order->items()->create([
+                        'product_id' => $product->id,
+                        'quantity'   => $item['quantity'],
+                        'price'      => $product->price,
+                        'subtotal'   => $product->price * $item['quantity'],
+                    ]);
 
-            $order->update([
-                'payment_token' => $data['data']['va_number'] ?? null,
+                    // Kurangi stok produk
+                    $product->decrement('stock', $item['quantity']);
+                }
+            }
+        }
+
+        // 🔹 Buat Virtual Account Pembayaran
+        try {
+            $response = Http::withHeaders([
+                'X-API-Key' => config('services.payment.api_key'),
+                'Accept'    => 'application/json',
+            ])->post(config('services.payment.base_url') . '/virtual-account/create', [
+                'external_id'      => (string) $order->order_id,
+                'amount'           => $order->total_amount,
+                'customer_name'    => $customer->name,
+                'customer_email'   => $customer->email,
+                'customer_phone'   => $customer->phone,
+                'description'      => 'Pembayaran pesanan #' . $order->order_id,
+                'expired_duration' => $expiredHours,
+                'callback_url'     => route('landing.order.success'),
+                'metadata' => [
+                    'order_id'    => $order->order_id,
+                    'customer_id' => $order->customer_id,
+                ],
             ]);
 
-            // Simpan data pembayaran ke session untuk halaman waiting
-            session([
-                'payment' => [
+            if ($response->successful()) {
+                $data = $response->json();
+
+                $order->update([
+                    'payment_token' => $data['data']['va_number'] ?? null,
+                ]);
+
+                $paymentTransaction = Payment::create([
+                    'order_id' => $order->order_id,
+                    'reservation_id' => $reservation?->reservation_id,
+                    'payment_method' => $data['data']['payment_method'] ?? 'virtual_account',
+                    'amount' => $data['data']['amount'] ?? $order->total_amount,
+                    'payment_date' => $data['data']['payment_date'] ?? now(),
+                    'status' => $data['data']['status'] ?? 'pending',
+                    'payment_url' => $data['data']['payment_url'] ?? null,
+                ]);
+
+                session(['payment' => [
                     'order'     => $order->toArray(),
                     'cart'      => $cart,
                     'total'     => $totalAmount,
                     'va_number' => $data['data']['va_number'] ?? null,
-                ]
-            ]);
+                    'name'      => $customer->name,
+                    'payment_url' => $data['data']['payment_url'] ?? null
+                ]]);
 
-            return redirect()->route('payment.waiting');
-        } else {
+                return redirect()->route('payment.waiting');
+            } else {
+                $order->update(['payment_status' => 'failed']);
+                return redirect()->route('landing.menu')->with('error', 'Gagal membuat pembayaran. Silakan coba lagi.');
+            }
+        } catch (\Exception $e) {
             $order->update(['payment_status' => 'failed']);
-            return redirect()->route('landing.menu')->with('error', 'Gagal membuat pembayaran. Silakan coba lagi.');
+            return redirect()->route('landing.welcome')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-    } catch (\Exception $e) {
-        $order->update(['payment_status' => 'failed']);
-        return redirect()->route('landing.menu')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
     }
-}
+
 
 
     public function waiting()
@@ -126,6 +169,4 @@ public function process(Request $request)
 
         return view('landing.payment.waiting', compact('payment'));
     }
-
-
 }

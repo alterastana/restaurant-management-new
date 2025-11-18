@@ -43,8 +43,14 @@
                         Temukan makanan dan minuman terbaik di Roemah Kuliner.
                     </p>
                     <h1 class="text-3xl text-green-600 font-semibold tracking-wide uppercase">
-    Anda di Meja Nomor {{ $tableNumber ?? session('table_number') ?? '1' }}
-</h1>
+                        Anda di Meja Nomor {{ $tableNumber ?? '1' }}
+                    </h1>
+
+                    <h1 class="text-3xl text-green-600 font-semibold tracking-wide uppercase">
+                        Kapasitas Meja {{ $capacity ?? 'Tidak Diketahui' }} Orang
+                    </h1>
+
+
 
                 </div>
                 <div class="animate__animated animate__fadeInRight">

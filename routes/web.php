@@ -12,6 +12,7 @@ use App\Http\Controllers\Dashboard\{
     TableController, // Pastikan TableController di-import
     LoyaltyController
 };
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Auth;
 
 // =====================================================
@@ -22,7 +23,7 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     $menus = \App\Models\Menu::all();
     return view('welcome', ['menus' => $menus]);
-});
+})->name('landing.welcome');
 
 // Public restaurants & menu (customer-facing)
 Route::get('/restaurants', [App\Http\Controllers\LandingController::class, 'restaurants'])->name('landing.restaurants');
@@ -49,6 +50,7 @@ Route::post('/order/preview', [LandingController::class, 'previewOrder'])->name(
 
 // simpan ke database setelah konfirmasi
 Route::post('/order', [LandingController::class, 'storeOrder'])->name('landing.order.store');
+Route::get('/order/success', [LandingController::class, 'success'])->name('landing.order.success');
 
 // Halaman login manual (bisa override bawaan Laravel Breeze/Jetstream)
 Route::get('/login', fn() => view('auth.login'))
@@ -133,3 +135,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
 });
+
+Route::post('/webhook/payment', [OrderController::class, 'webhook'])->name('webhook.payment');

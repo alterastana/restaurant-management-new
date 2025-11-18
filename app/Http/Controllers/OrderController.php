@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Menu;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Restaurant;
+use App\Models\Restoran;
 use App\Models\TableRestaurant;
 use App\Services\PaymentGatewayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -15,11 +19,10 @@ class OrderController extends Controller
 
     public function __construct(PaymentGatewayService $paymentService)
     {
-        $this->middleware('auth');
         $this->paymentService = $paymentService;
     }
 
-    public function create(Restaurant $restaurant)
+    public function create(Restoran $restaurant)
     {
         $tables = TableRestaurant::where('restaurant_id', $restaurant->id)
             ->where('status', 'available')
@@ -98,15 +101,103 @@ class OrderController extends Controller
 
         return view('orders.cancelled', compact('order'));
     }
+public function webhook(Request $request)
+{
+    // 🔹 Log seluruh payload ke laravel.log
+    Log::info('📩 Webhook received', [
+        'headers' => $request->headers->all(),
+        'payload' => $request->all(),
+    ]);
 
-    public function webhook(Request $request)
-    {
-        $result = $this->paymentService->handleWebhook($request->all());
+    // 🔹 Validasi signature webhook
+    $signature = $request->header('X-Webhook-Signature');
+    $webhookSecret = config('services.payment.webhook_secret');
+    $payload = $request->all();
+    $expectedSignature = hash_hmac('sha256', json_encode($payload), $webhookSecret);
 
-        if (!$result) {
-            return response()->json(['message' => 'Failed to process webhook'], 400);
-        }
-
-        return response()->json(['message' => 'Webhook processed successfully']);
+    if (!hash_equals($expectedSignature, $signature)) {
+        Log::warning('⚠️ Invalid webhook signature', [
+            'expected' => $expectedSignature,
+            'received' => $signature,
+        ]);
+        return response()->json(['error' => 'Invalid signature'], 401);
     }
+
+    // ✅ Ambil event dan data
+    $event = $request->input('event');
+    $data = $request->input('data');
+
+    Log::info('🔍 Webhook data parsed', [
+        'event' => $event,
+        'data' => $data,
+    ]);
+
+    $externalId = $data['external_id'] ?? null;
+    $metadata = $data['metadata'] ?? [];
+    $orderId = $metadata['order_id'] ?? null;
+
+    Log::info('🧾 Extracted metadata', [
+        'externalId' => $externalId,
+        'metadata' => $metadata,
+        'orderId' => $orderId,
+    ]);
+
+    $order = Order::find($orderId) ?? Order::where('order_id', $externalId)->first();
+
+    if (!$order) {
+        Log::warning('🚫 Order not found', [
+            'external_id' => $externalId,
+            'order_id' => $orderId,
+        ]);
+        return response()->json(['error' => 'Order not found'], 404);
+    }
+
+    // ✅ Cegah double processing
+    if ($order->status === 'paid') {
+        Log::info('🔁 Payment already processed', [
+            'order_id' => $order->order_id,
+        ]);
+        return response()->json(['message' => 'Already processed'], 200);
+    }
+
+    // ✅ Tangani event sesuai status
+    switch ($event) {
+        case 'payment.success':
+            $order->update([
+                'payment_status' => 'paid',
+                'paid_at' => now(),
+                'status' => 'completed',
+            ]);
+
+            Payment::where('order_id', $order->order_id)->update([
+                'status' => 'completed',
+                'payment_date' => now(),
+            ]);
+
+            Log::info('✅ Payment success processed', [
+                'order_id' => $order->order_id,
+                'amount' => $order->total_amount,
+            ]);
+            break;
+
+        case 'payment.failed':
+            $order->update(['payment_status' => 'failed']);
+            Payment::where('order_id', $order->order_id)->update(['status' => 'failed']);
+            Log::info('❌ Payment failed processed', ['order_id' => $order->order_id]);
+            break;
+
+        case 'payment.expired':
+            $order->update(['payment_status' => 'expired']);
+            Payment::where('order_id', $order->order_id)->update(['status' => 'failed']);
+            Log::info('⌛ Payment expired processed', ['order_id' => $order->order_id]);
+            break;
+
+        default:
+            Log::info('ℹ️ Unhandled event received', ['event' => $event]);
+            return response()->json(['message' => 'Event not handled'], 200);
+    }
+
+    return response()->json(['message' => 'Webhook processed successfully'], 200);
+}
+
 }

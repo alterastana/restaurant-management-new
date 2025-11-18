@@ -12,7 +12,7 @@ class PaymentGatewayService
 
     public function __construct()
     {
-        $this->apiKey = config('services.doovera.key');
+        $this->apiKey = config('services.doovera.key' ?? 'services.payment.api_key');
     }
 
     public function createPayment(Order $order)

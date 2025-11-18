@@ -5,10 +5,12 @@
     <div class="max-w-2xl p-8 mx-auto bg-white rounded-lg shadow-md text-center">
         <h1 class="mb-6 text-2xl font-bold text-gray-800">Menunggu Pembayaran</h1>
 
+        {{-- @php
+            dd($payment);    
+        @endphp --}}
         <p class="text-gray-600 mb-6">
-            Terima kasih, {{ $payment['order']['name'] }}. Pesanan kamu sedang menunggu pembayaran.
+            Terima kasih, {{ $payment['name'] }}. Pesanan kamu sedang menunggu pembayaran.
         </p>
-
         <div class="border rounded-md divide-y divide-gray-200">
             @foreach($payment['cart'] as $item)
                 <div class="flex justify-between px-4 py-3 text-left">
@@ -30,7 +32,7 @@
 
         <p class="mt-8 text-gray-500">Silakan selesaikan pembayaran untuk memproses pesanan Anda.</p>
 
-        <a href="{{ route('landing.welcome') }}" class="mt-6 inline-block px-6 py-3 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700">
+        <a href="{{ $payment['payment_url'] }}" class="mt-6 inline-block px-6 py-3 font-bold text-white bg-blue-600 rounded-md hover:bg-blue-700">
             Lanjut bayar
         </a>
     </div>

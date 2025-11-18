@@ -17,17 +17,29 @@ class LandingController extends Controller
     {
         // Ambil nomor meja dari query string (?table=6)
         $tableNumber = $request->query('table', 1); // default meja 1
-        session(['table_number' => $tableNumber]); // simpan di session
+        session(['table_number' => $tableNumber]);
+
+        // Ambil kapasitas meja langsung dari database
+
+
+
+        //dd($tableNumber, $capacity);
 
         $menus = Menu::all();
+
+
+        // Kirim kapasitas langsung ke view
         return view('landing.menu', compact('menus', 'tableNumber'));
     }
+
+
 
     // ======================================================
     // 🔹 4. Tampilkan form checkout
     // ======================================================
     public function checkout()
     {
+        // dd(session('cart'));
         return view('landing.checkout');
     }
 
@@ -44,6 +56,7 @@ class LandingController extends Controller
 
         // Simpan sementara data order ke session
         session(['order_data' => $validated]);
+        session('table_number', []);
 
         // Ambil cart dari session
         $cart = session('cart', []);
@@ -87,19 +100,7 @@ class LandingController extends Controller
         session(['checkout_customer' => $customer]);
         session()->forget('order_data');
 
-        // 🧩 Tambahan: buat reservasi otomatis berdasarkan nomor meja
-        $tableNumber = session('table_number', 1); // default meja 1
-        $table = TableRestaurant::where('table_number', $tableNumber)->first();
 
-        if ($table) {
-            Reservation::create([
-                'table_id'          => $table->table_id,
-                'customer_id'       => $customer->customer_id,
-                'reservation_date'  => now()->toDateString(),
-                'reservation_time'  => now()->toTimeString(),
-                'status'            => 'confirmed',
-            ]);
-        }
 
         // Arahkan ke halaman pembayaran
         return redirect()->route('payment.confirm')
@@ -124,11 +125,17 @@ class LandingController extends Controller
         // Ambil nomor meja dari query (misalnya ?table=6)
         $tableNumber = $request->query('table', 1);
         session(['table_number' => $tableNumber]);
+        $capacity = TableRestaurant::where('table_number', intval($tableNumber))->value('capacity');
 
         // Reset session cart & customer setiap ke halaman utama
         session()->forget(['cart', 'checkout_customer']);
 
         $menus = Menu::all();
-        return view('welcome', compact('menus', 'tableNumber'));
+        return view('welcome', compact('menus', 'tableNumber', 'capacity'));
+    }
+
+    public function success()
+    {
+        return view('landing.payment.success');
     }
 }
