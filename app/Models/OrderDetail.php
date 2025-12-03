@@ -18,7 +18,7 @@ class OrderDetail extends Model
         'product_name',
         'quantity',
         'price',
-        'subtotal',
+
     ];
 
     // Relasi ke tabel Orders

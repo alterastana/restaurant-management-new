@@ -31,6 +31,7 @@ class Order extends Model
         'order_date',
         'total_amount',
         'status',
+        'notes',
     ];
 
     /**

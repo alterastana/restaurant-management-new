@@ -48,7 +48,7 @@ class PaymentController extends Controller
                 'customer_id'       => $customer->customer_id,
                 'reservation_date'  => now(),
                 'reservation_time'  => now(),
-                'status'            => 'pending',
+
             ]);
         }
 
@@ -88,10 +88,10 @@ class PaymentController extends Controller
                 $product = Menu::find($item['menu_id']);
                 if ($product) {
                     $order->items()->create([
-                        'product_id' => $product->id,
+                        'menu_id' => $product->id,
                         'quantity'   => $item['quantity'],
                         'price'      => $product->price,
-                        'subtotal'   => $product->price * $item['quantity'],
+                        
                     ]);
 
                     // Kurangi stok produk

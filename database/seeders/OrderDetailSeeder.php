@@ -9,13 +9,17 @@ class OrderDetailSeeder extends Seeder
 {
     public function run(): void
     {
-        foreach (range(1, 50) as $i) {
-            DB::table('order_details')->insert([
-                'order_id' => rand(1, 25),
-                'menu_id'  => rand(1, 30),
-                'quantity' => rand(1, 5),
-                'price'    => rand(10, 100),
-            ]);
-        }
+        $faker = \Faker\Factory::create();
+$orderIds = $faker->unique()->randomElements(range(1, 25), 25);
+
+foreach ($orderIds as $orderId) {
+    DB::table('order_details')->insert([
+        'order_id' => $orderId,
+        'menu_id'  => rand(1, 10),
+        'quantity' => rand(1, 5),
+        'price'    => rand(10, 100),
+    ]);
+}
+
     }
 }
