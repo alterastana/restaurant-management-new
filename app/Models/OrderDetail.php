@@ -15,15 +15,22 @@ class OrderDetail extends Model
 
     protected $fillable = [
         'order_id',
-        'product_name',
+        'menu_id',
         'quantity',
         'price',
-
     ];
 
-    // Relasi ke tabel Orders
+    protected $casts = [
+        'order_id' => 'string', // penting untuk UUID
+    ];
+
     public function order()
     {
         return $this->belongsTo(Order::class, 'order_id', 'order_id');
+    }
+
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class, 'menu_id', 'menu_id');
     }
 }

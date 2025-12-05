@@ -10,16 +10,19 @@ class OrderDetailSeeder extends Seeder
     public function run(): void
     {
         $faker = \Faker\Factory::create();
-$orderIds = $faker->unique()->randomElements(range(1, 25), 25);
 
-foreach ($orderIds as $orderId) {
-    DB::table('order_details')->insert([
-        'order_id' => $orderId,
-        'menu_id'  => rand(1, 10),
-        'quantity' => rand(1, 5),
-        'price'    => rand(10, 100),
-    ]);
-}
+        // Ambil UUID orders
+        $orderIds = json_decode(file_get_contents(database_path('seeders/order_ids.json')), true);
 
+        foreach ($orderIds as $orderId) {
+            DB::table('order_details')->insert([
+                'order_id' => $orderId,       // UUID
+                'menu_id'  => rand(1, 10),
+                'quantity' => rand(1, 5),
+                'price'    => rand(10, 100),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }

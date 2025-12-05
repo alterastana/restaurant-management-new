@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void {
         Schema::create('orders', function (Blueprint $table) {
-            $table->id('order_id');
+            $table->uuid('order_id')->primary(); // UUID
             $table->unsignedBigInteger('restaurant_id');
             $table->unsignedBigInteger('reservation_id')->nullable();
             $table->string('order_type');
@@ -15,8 +15,13 @@ return new class extends Migration {
             $table->string('status');
             $table->timestamps();
 
-            $table->foreign('restaurant_id')->references('restaurant_id')->on('restaurants')->onDelete('cascade');
-            $table->foreign('reservation_id')->references('reservation_id')->on('reservations')->onDelete('set null');
+            $table->foreign('restaurant_id')
+                ->references('restaurant_id')->on('restaurants')
+                ->onDelete('cascade');
+
+            $table->foreign('reservation_id')
+                ->references('reservation_id')->on('reservations')
+                ->onDelete('set null');
         });
     }
 

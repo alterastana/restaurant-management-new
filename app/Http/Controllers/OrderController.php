@@ -33,55 +33,55 @@ class OrderController extends Controller
         return view('orders.create', compact('restaurant', 'tables', 'menus'));
     }
 
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'restaurant_id' => 'required|exists:restaurants,id',
-            'table_id' => 'required|exists:table_restaurants,id',
-            'menu_items' => 'required|array',
-            'menu_items.*.menu_id' => 'required|exists:menus,id',
-            'menu_items.*.quantity' => 'required|integer|min:1',
-            'notes' => 'nullable|string'
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'restaurant_id' => 'required|exists:restaurants,id',
+    //         'table_id' => 'required|exists:table_restaurants,id',
+    //         'menu_items' => 'required|array',
+    //         'menu_items.*.menu_id' => 'required|exists:menus,id',
+    //         'menu_items.*.quantity' => 'required|integer|min:1',
+    //         'notes' => 'nullable|string'
+    //     ]);
 
-        // Calculate total amount
-        $totalAmount = 0;
-        foreach ($validatedData['menu_items'] as $item) {
-            $menu = Menu::find($item['menu_id']);
-            $totalAmount += $menu->price * $item['quantity'];
-        }
+    //     // Calculate total amount
+    //     $totalAmount = 0;
+    //     foreach ($validatedData['menu_items'] as $item) {
+    //         $menu = Menu::find($item['menu_id']);
+    //         $totalAmount += $menu->price * $item['quantity'];
+    //     }
 
-        // Create order
-        $order = Order::create([
-            'customer_id' => Auth::id(),
-            'restaurant_id' => $validatedData['restaurant_id'],
-            'table_id' => $validatedData['table_id'],
-            'order_date' => now(),
-            'status' => 'pending',
-            'total_amount' => $totalAmount,
-            'notes' => $validatedData['notes'],
-        ]);
+    //     // Create order
+    //     $order = Order::create([
+    //         'customer_id' => Auth::id(),
+    //         'restaurant_id' => $validatedData['restaurant_id'],
+    //         'table_id' => $validatedData['table_id'],
+    //         'order_date' => now(),
+    //         'status' => 'pending',
+    //         'total_amount' => $totalAmount,
+    //         'notes' => $validatedData['notes'],
+    //     ]);
 
-        // Create order details
-        foreach ($validatedData['menu_items'] as $item) {
-            $menu = Menu::find($item['menu_id']);
-            $order->orderDetails()->create([
-                'menu_id' => $item['menu_id'],
-                'quantity' => $item['quantity'],
-                'price' => $menu->price,
-                'subtotal' => $menu->price * $item['quantity']
-            ]);
-        }
+    //     // Create order details
+    //     foreach ($validatedData['menu_items'] as $item) {
+    //         $menu = Menu::find($item['menu_id']);
+    //         $order->orderDetails()->create([
+    //             'menu_id' => $item['menu_id'],
+    //             'quantity' => $item['quantity'],
+    //             'price' => $menu->price,
+    //             // 'subtotal' => $menu->price * $item['quantity']
+    //         ]);
+    //     }
 
-        // Create payment
-        $paymentResponse = $this->paymentService->createPayment($order);
+    //     // Create payment
+    //     $paymentResponse = $this->paymentService->createPayment($order);
 
-        if ($paymentResponse['success']) {
-            return redirect($paymentResponse['payment_url']);
-        }
+    //     if ($paymentResponse['success']) {
+    //         return redirect($paymentResponse['payment_url']);
+    //     }
 
-        return back()->with('error', 'Failed to process payment. Please try again.');
-    }
+    //     return back()->with('error', 'Failed to process payment. Please try again.');
+    // }
 
     public function success(Request $request)
     {
