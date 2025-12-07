@@ -10,6 +10,7 @@ use App\Models\Customer;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Stringable;
 
@@ -48,7 +49,7 @@ class PaymentController extends Controller
                 'customer_id'       => $customer->customer_id,
                 'reservation_date'  => now(),
                 'reservation_time'  => now(),
-                'status'            => 'pending',
+
             ]);
         }
 
@@ -73,25 +74,27 @@ class PaymentController extends Controller
             'customer_id'     => $customer->customer_id,
             'restaurant_id'   => 1,
             'reservation_id'  => $reservation?->reservation_id, // <- pakai id reservasi yang baru dibuat
-            'order_type'      => $request->input('takeaway', 'dine-in'),
+            'order_type'      => $request->order_type,
             'order_date'      => now(),
             'status'          => 'pending',
             'total_amount'    => $totalAmount,
             'notes'           => $request->input('note'),
-            'payment_status'  => 'pending',
+            'status'  => 'pending',
             'payment_method'  => 'virtual_account',
         ]);
 
         // 🔹 Simpan detail order items (jika relasi tersedia)
-        if (method_exists($order, 'items')) {
+        if (method_exists($order, 'orderDetails')) {
+            Log::info('cart', $cart);
             foreach ($cart as $item) {
                 $product = Menu::find($item['menu_id']);
+                Log::info('product', $product->toArray());
                 if ($product) {
-                    $order->items()->create([
-                        'product_id' => $product->id,
+                    $order->orderDetails()->create([
+                        'menu_id' => $product->menu_id,
                         'quantity'   => $item['quantity'],
                         'price'      => $product->price,
-                        'subtotal'   => $product->price * $item['quantity'],
+
                     ]);
 
                     // Kurangi stok produk
@@ -148,11 +151,13 @@ class PaymentController extends Controller
 
                 return redirect()->route('payment.waiting');
             } else {
-                $order->update(['payment_status' => 'failed']);
+                $order->update(['status' => 'failed']);
+                Log ::error('Gagal membuat pembayaran: ' . $response->body());
                 return redirect()->route('landing.menu')->with('error', 'Gagal membuat pembayaran. Silakan coba lagi.');
             }
         } catch (\Exception $e) {
-            $order->update(['payment_status' => 'failed']);
+            $order->update(['status' => 'failed']);
+            Log::error('Gagal membuat pembayaran: ' . $e->getMessage());
             return redirect()->route('landing.welcome')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }

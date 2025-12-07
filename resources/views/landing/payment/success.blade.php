@@ -1,38 +1,20 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Pembayaran Berhasil
-        </h2>
-    </x-slot>
+@extends('layouts.public')
 
-    {{-- <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-center">
-                    <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4">
-                        <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-green-600 mb-2">Pembayaran Berhasil!</h3>
-                    <p class="text-gray-600 mb-6">Order #{{ $order->order_number }}</p>
+@section('content')
+<div class="container py-12 mx-auto">
+    <div class="max-w-2xl p-8 mx-auto bg-white rounded-lg shadow-md text-center">
+        <h1 class="mb-6 text-2xl font-bold text-gray-800">Pembayaran berhasil</h1>
 
-                    <div class="border rounded-lg p-4 mb-6">
-                        <h4 class="font-semibold mb-2">Total Dibayar:</h4>
-                        <p class="text-2xl font-bold text-green-700">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</p>
-                        <p class="text-gray-500 mt-2 text-sm">Tanggal Bayar: {{ $order->paid_at->format('d M Y H:i') }} WIB</p>
-                    </div>
+        <p class="text-gray-600 mb-6">
+            Terima kasih, Pesanan kamu sudah diterima.
+        </p>
 
-                    <div class="flex gap-4">
-                        <a href="{{ url('/') }}" class="flex-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded text-center">
-                            Kembali ke Beranda
-                        </a>
-                        <a href="{{ route('dashboard') }}" class="flex-1 bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded text-center">
-                            Dashboard
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-</x-app-layout>
+        <p class="mt-8 text-gray-500">Silakan menunggu sebentar.</p>
+
+        <a href="{{ route('landing.welcome') }}" 
+           class="mt-6 inline-block px-6 py-3 font-bold text-white bg-green-600 rounded-md hover:bg-green-700">
+            Kembali ke Beranda
+        </a>
+    </div>
+</div>
+@endsection

@@ -4,66 +4,60 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang digunakan.
-     */
     protected $table = 'orders';
 
-    /**
-     * Primary key tabel.
-     */
     protected $primaryKey = 'order_id';
-    public $incrementing = true;
-    protected $keyType = 'int';
+    public $incrementing = false;      // UUID bukan auto increment
+    protected $keyType = 'string';     // UUID berbentuk string
 
-    /**
-     * Kolom yang boleh diisi secara massal.
-     */
     protected $fillable = [
+        'order_id',
         'restaurant_id',
         'reservation_id',
         'order_type',
         'order_date',
         'total_amount',
         'status',
+        'notes',
     ];
 
     /**
-     * Relasi ke Customer (Many to One)
+     * Auto-generate UUID saat create
      */
+    protected static function boot()
+    {
+        parent::boot();
 
-    /**
-     * Relasi ke Restaurant (Many to One)
-     */
+        static::creating(function ($model) {
+            if (!$model->order_id) {
+                $model->order_id = (string) Str::uuid();
+            }
+        });
+    }
+
+    /** RELASI **/
+    
     public function restaurant()
     {
         return $this->belongsTo(Restoran::class, 'restaurant_id', 'restaurant_id');
     }
 
-    /**
-     * Relasi ke Reservation (One to One - optional)
-     */
     public function reservation()
     {
         return $this->belongsTo(Reservation::class, 'reservation_id', 'reservation_id');
     }
 
-    /**
-     * Relasi ke OrderDetail (One to Many)
-     */
     public function orderDetails()
     {
         return $this->hasMany(OrderDetail::class, 'order_id', 'order_id');
     }
 
-    /**
-     * Relasi ke Payment (One to One)
-     */
     public function payment()
     {
         return $this->hasOne(Payment::class, 'order_id', 'order_id');

@@ -20,4 +20,9 @@ class Menu extends Model
         'price',
         'stock',
     ];
+
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class, 'menu_id', 'menu_id');
+    }
 }
