@@ -25,14 +25,14 @@
                 <span class="brand-text">Roemah Kuliner</span>
             </a>
             <div class="nav-links">
-                <a href="/">Home</a>
+                <a href="#home">Home</a>
                 <a href="#menus">Order</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-pattern min-h-screen flex items-center pt-20">
+    <section id="home" class="hero-pattern min-h-screen flex items-center pt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div class="animate__animated animate__fadeInLeft">

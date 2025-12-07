@@ -8,6 +8,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/css/style.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .site-main {
+            flex: 1;
+        }
+    </style>
 </head>
 <body class="antialiased">
     <nav class="navbar">
@@ -18,7 +32,7 @@
                     <span class="brand-text name-hide-mobile">Restaurant Lezat</span>
                 </a>
             </div>
-            <div class="nav-links">
+            <!-- <div class="nav-links">
                 <a href="{{ route('landing.restaurants') }}">Restaurants</a>
                 <a href="{{ route('landing.restaurants') }}#menus">Menus</a>
 
@@ -30,7 +44,7 @@
                         <a href="{{ route('register') }}">Register</a>
                     @endif
                 @endauth
-            </div>
+            </div> -->
         </div>
     </nav>
 

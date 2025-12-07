@@ -1,88 +1,111 @@
 @extends('layouts.public')
 
 @section('content')
-<div class="container py-12 mx-auto">
-    <div class="max-w-2xl p-8 mx-auto bg-white rounded-lg shadow-md text-center">
-        <h1 class="mb-6 text-2xl font-bold text-gray-800">Konfirmasi Pesanan</h1>
+<div class="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div class="w-full max-w-3xl bg-white rounded-2xl shadow-lg overflow-hidden">
 
-        <p><strong>Nama:</strong> {{ $order['name'] }}</p>
-        <p><strong>Email:</strong> {{ $order['email'] }}</p>
-        <p><strong>Telepon:</strong> {{ $order['phone'] }}</p>
+        <!-- Header -->
+        <div class="bg-red-700 text-white text-center py-6">
+            <h1 class="text-2xl font-bold">Konfirmasi Pesanan</h1>
+            <p class="text-sm opacity-90">Periksa kembali pesanan Anda sebelum melanjutkan</p>
+        </div>
 
-        <!-- ✅ Cart Items -->
-        <h2 class="mt-8 mb-4 text-xl font-semibold text-gray-800">Daftar Pesanan</h2>
+        <div class="p-8 space-y-6">
 
-        @if(!empty($cart))
-            <div class="border rounded-md divide-y divide-gray-200">
-                @foreach($cart as $item)
-                    <div class="flex justify-between px-4 py-3 text-left">
-                        <div>
-                            <p class="font-medium text-gray-900">{{ $item['name'] }}</p>
-                            <p class="text-sm text-gray-500">Qty: {{ $item['quantity'] }}</p>
-                        </div>
-                        <p class="font-semibold text-gray-800">
-                            Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}
-                        </p>
-                    </div>
-                @endforeach
-            </div>
-
-            <!-- Total -->
-            <div class="flex justify-between mt-4 text-lg font-bold">
-                <span>Total:</span>
-                <span>
-                    Rp {{ number_format(collect($cart)->sum(fn($i) => $i['price'] * $i['quantity']), 0, ',', '.') }}
-                </span>
-            </div>
-        @else
-            <p class="mt-4 text-gray-500">Keranjang kosong.</p>
-        @endif
-
-        <!-- ✅ Form Konfirmasi -->
-        <form action="{{ route('payment.process') }}" method="POST" class="mt-6">
-            @csrf
-
-            <!-- Pilihan Dine-In / Takeaway -->
-            <div class="text-left">
-                <p class="mb-2 text-gray-700 font-semibold">Pilih Jenis Pesanan:</p>
-
-                <div class="flex flex-col gap-2">
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="order_type" value="dine-in" class="text-green-600 border-gray-300 focus:ring-green-500" required>
-                        <span class="ml-2">Dine-In (Makan di tempat)</span>
-                    </label>
-
-                    <label class="inline-flex items-center">
-                        <input type="radio" name="order_type" value="takeaway" class="text-green-600 border-gray-300 focus:ring-green-500" required>
-                        <span class="ml-2">Takeaway (Bawa pulang)</span>
-                    </label>
+            <!-- Data Pemesan -->
+            <div class="grid md:grid-cols-3 gap-4 border rounded-lg p-4 bg-gray-50">
+                <div>
+                    <p class="text-sm text-gray-500">Nama</p>
+                    <p class="font-semibold text-gray-800">{{ $order['name'] }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Email</p>
+                    <p class="font-semibold text-gray-800">{{ $order['email'] }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Telepon</p>
+                    <p class="font-semibold text-gray-800">{{ $order['phone'] }}</p>
                 </div>
             </div>
 
-            <!-- ✅ Catatan Pelanggan -->
-            <div class="mt-5 text-left">
-                <label for="note" class="block mb-2 text-gray-700 font-semibold">
-                    Catatan Pelanggan (opsional):
-                </label>
-                <textarea 
-                    id="note" 
-                    name="note" 
-                    rows="3" 
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                    placeholder="Contoh: tanpa sambal, tambahkan sendok, dsb..."></textarea>
+            <!-- Daftar Pesanan -->
+            <div>
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Daftar Pesanan</h2>
+
+                @if(!empty($cart))
+                    <div class="border rounded-lg divide-y">
+                        @foreach($cart as $item)
+                            <div class="flex justify-between items-center px-4 py-3">
+                                <div>
+                                    <p class="font-semibold text-gray-800">{{ $item['name'] }}</p>
+                                    <p class="text-sm text-gray-500">Qty: {{ $item['quantity'] }}</p>
+                                </div>
+                                <p class="font-bold text-green-600">
+                                    Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}
+                                </p>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Total -->
+                    <div class="flex justify-between items-center mt-4 p-4 bg-green-50 rounded-lg text-lg font-bold">
+                        <span>Total Pembayaran</span>
+                        <span class="text-green-700">
+                            Rp {{ number_format(collect($cart)->sum(fn($i) => $i['price'] * $i['quantity']), 0, ',', '.') }}
+                        </span>
+                    </div>
+                @else
+                    <p class="text-center text-gray-500">Keranjang kosong.</p>
+                @endif
             </div>
 
-            <!-- Tombol -->
-            <div class="flex justify-center gap-4 mt-6">
-                <button type="submit" class="px-6 py-3 font-bold text-white bg-green-600 rounded-md hover:bg-green-700">
-                    Konfirmasi & Bayar
-                </button>
+            <!-- Form Konfirmasi -->
+            <form action="{{ route('payment.process') }}" method="POST" class="space-y-6">
+                @csrf
 
-                <a href="{{ route('landing.checkout') }}" class="px-6 py-3 font-bold text-white bg-gray-500 rounded-md hover:bg-gray-600">
-                    Kembali
-                </a>
-            </div>
-        </form>
+                <!-- Jenis Pesanan -->
+                <div>
+                    <p class="mb-3 font-semibold text-gray-700">Jenis Pesanan</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:border-green-500">
+                            <input type="radio" name="order_type" value="dine-in" required>
+                            <span>Dine-In</span>
+                        </label>
+
+                        <label class="flex items-center gap-2 p-3 border rounded-lg cursor-pointer hover:border-green-500">
+                            <input type="radio" name="order_type" value="takeaway" required>
+                            <span>Takeaway</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Catatan -->
+                <div>
+                    <label class="block mb-2 font-semibold text-gray-700">
+                        Catatan Pelanggan (Opsional)
+                    </label>
+                    <textarea 
+                        name="note" 
+                        rows="3"
+                        class="w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500"
+                        placeholder="Contoh: tanpa sambal, lebih pedas, dll..."></textarea>
+                </div>
+
+                <!-- Tombol -->
+                <div class="flex flex-col md:flex-row gap-4 mt-6">
+                    <button type="submit" 
+                        class="w-full md:w-1/2 py-3 rounded-lg bg-green-600 text-white font-bold hover:bg-green-700 transition">
+                        Konfirmasi & Bayar
+                    </button>
+
+                    <a href="{{ route('landing.checkout') }}" 
+                        class="w-full md:w-1/2 py-3 rounded-lg bg-gray-500 text-white font-bold text-center hover:bg-gray-600 transition">
+                        Kembali
+                    </a>
+                </div>
+            </form>
+
+        </div>
     </div>
 </div>
 @endsection
