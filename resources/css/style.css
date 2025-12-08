@@ -14,14 +14,14 @@ body {
     background: var(--bg);
     color: #111827;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    -moz-osx-font-smoothing: grayscale;   
 }
 
 /* Container helper */
 .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
 
 /* Ensure main content is not hidden under fixed navbar. Use nav variable for consistency. */
-.site-main { padding-top: calc(var(--nav-height) + 8px); }
+.site-main { padding-top: calc(var(--nav-height) + 8px);}
 
 /* NAVBAR */
 .navbar {
