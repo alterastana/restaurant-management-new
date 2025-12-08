@@ -34,6 +34,15 @@
                     Buat Pesanan
                 </button>
             </div>
+
+            <! -- Back Button -->
+            <div class="text-center mt-4">
+    <a href="{{ route('landing.welcome') }}"
+       class="block w-full px-6 py-3 font-bold text-white text-center transition rounded-md bg-gray-500 hover:bg-gray-600">
+        Kembali
+    </a>
+</div>
+
         </form>
     </div>
 </div>

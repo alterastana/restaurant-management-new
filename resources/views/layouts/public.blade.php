@@ -28,8 +28,9 @@
         <div class="container navbar-inner">
             <div class="brand">
                 <a href="/" class="brand-pill">
-                    <img src="{{ asset('images/logo.svg') }}" alt="Restaurant Lezat" class="logo">
-                    <span class="brand-text name-hide-mobile">Restaurant Lezat</span>
+                    <img src="{{ asset('images/logo.png') }}" alt="Roemah Kuliner" class="logo">
+                    <span class="brand-text name-hide-mobile">Roemah Kuliner</span>
+                
                 </a>
             </div>
             <!-- <div class="nav-links">

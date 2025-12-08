@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Restoran Lezat — Find Restaurants & Menus</title>
+    <title>Roemah Kuliner — Restaurants makanan terbaik</title>
     @vite(['resources/css/app.css', 'resources/css/style.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -139,7 +139,7 @@
 
     <footer class="bg-gray-900 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-gray-400">&copy; {{ date('Y') }} Restoran Lezat. All rights reserved.</p>
+            <p class="text-gray-400">&copy; {{ date('Y') }} Roemah Kuliner. All rights reserved.</p>
         </div>
     </footer>
 
