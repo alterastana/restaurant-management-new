@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('permissions', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('table_restaurants', function (Blueprint $table) {
+            if (!Schema::hasColumn('table_restaurants', 'qr_code')) {
+                $table->string('qr_code')->nullable()->after('status');
+            }
         });
     }
 
@@ -22,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('permissions');
+        Schema::table('table_restaurants', function (Blueprint $table) {
+            $table->dropColumn('qr_code');
+        });
     }
 };

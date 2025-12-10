@@ -12,6 +12,9 @@ class TableRestaurant extends Model
     protected $table = 'table_restaurants';
     protected $primaryKey = 'table_id';
 
+    /**
+     * Kolom yang boleh diisi secara massal.
+     */
     protected $fillable = [
         'restaurant_id',
         'table_number',
@@ -20,11 +23,33 @@ class TableRestaurant extends Model
     ];
 
     /**
-     * Relasi ke model Restoran.
+     * Menonaktifkan timestamps jika tabel 'table_restaurants' tidak memiliki kolom created_at dan updated_at.
      */
-    public function restoran()
+    public $timestamps = false; 
+    
+    /**
+     * Relasi ke model Restaurant (Many to One).
+     */
+    public function restaurant()
     {
-        // Hubungkan 'restaurant_id' di tabel ini ke 'restaurant_id' di tabel 'restaurants'
+        // Asumsi model Restaurant bernama 'Restaurant' dan menggunakan 'restaurant_id'
+        // Jika nama model Anda benar-benar 'Restoran', ganti 'Restaurant::class' menjadi 'Restoran::class'
         return $this->belongsTo(Restoran::class, 'restaurant_id', 'restaurant_id');
+    }
+
+    /**
+     * Relasi ke Reservation (One to Many).
+     */
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'table_id', 'table_id');
+    }
+
+    /**
+     * Relasi ke Order (One to Many).
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'table_id', 'table_id');
     }
 }

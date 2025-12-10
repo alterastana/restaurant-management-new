@@ -4,21 +4,18 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Faker\Factory as Faker;
 
 class RestaurantSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        $faker = Faker::create();
-
-        foreach (range(1, 5) as $i) {
-            DB::table('restaurants')->insert([
-                'name'  => $faker->company,
-                'address' => $faker->address,
-                'phone' => $faker->phoneNumber,
-                'email' => $faker->unique()->safeEmail,
-            ]);
-        }
+        DB::table('restaurants')->insert([
+            'name' => 'Roemah Kuliner',
+            'address' => 'Jl.Gunpat No. 123, Indonesia',
+            'phone' => '081200000000',
+            'email' => 'roemahkuliner@resto.com',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }

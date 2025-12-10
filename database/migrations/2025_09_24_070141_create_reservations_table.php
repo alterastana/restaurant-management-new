@@ -12,7 +12,6 @@ return new class extends Migration {
             $table->unsignedBigInteger('customer_id');
             $table->date('reservation_date');
             $table->time('reservation_time');
-            $table->string('status');
             $table->timestamps();
 
             $table->foreign('table_id')->references('table_id')->on('table_restaurants')->onDelete('cascade');

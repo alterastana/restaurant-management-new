@@ -12,13 +12,13 @@ class ReservationSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        foreach (range(1, 20) as $i) {
+        foreach (range(1, 25) as $i) {
             DB::table('reservations')->insert([
                 'table_id' => rand(1, 20),
                 'customer_id' => rand(1, 15),
                 'reservation_date' => $faker->date(),
                 'reservation_time' => $faker->time(),
-                'status' => $faker->randomElement(['pending', 'confirmed', 'cancelled']),
+                
             ]);
         }
     }

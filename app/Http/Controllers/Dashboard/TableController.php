@@ -15,7 +15,7 @@ class TableController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('show_more') ? 100 : 10;
-        $tables = TableRestaurant::with('restoran')->latest()->paginate($perPage);
+        $tables = TableRestaurant::with('restaurant')->latest()->paginate($perPage);
         
         if ($request->ajax()) {
             return view('Dashboard.table.table', compact('tables'))->render();

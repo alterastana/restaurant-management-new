@@ -8,14 +8,19 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('order_details', function (Blueprint $table) {
             $table->id('order_detail_id');
-            $table->unsignedBigInteger('order_id');
+            $table->uuid('order_id'); // UUID
             $table->unsignedBigInteger('menu_id');
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
             $table->timestamps();
 
-            $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('cascade');
-            $table->foreign('menu_id')->references('menu_id')->on('menus')->onDelete('cascade');
+            $table->foreign('order_id')
+                ->references('order_id')->on('orders')
+                ->onDelete('cascade');
+
+            $table->foreign('menu_id')
+                ->references('menu_id')->on('menus')
+                ->onDelete('cascade');
         });
     }
 
